@@ -1,23 +1,29 @@
 import { sequelize } from '../database';
 import { DataTypes, Model, Optional } from 'sequelize';
 
+import { Client } from './Client'; // Importe o modelo do cliente
+import { Professional } from './Professional'; // Importe o modelo do profissional
+
 export interface Appointment {
   id: number;
   date: Date;
   hour: string;
-  clientId: number;
-  professionalId: number;
-  services: [{
+  client_id: number;
+  professional_id: number;
+  services: {
     id: number;
     name: string;
     price: number;
     description: string;
-  }]
+  }[];
 }
 
 export interface AppointmentCreationAttributes extends Optional<Appointment, 'id'> {}
 
-export interface AppointmentInstance extends Model<Appointment, AppointmentCreationAttributes>, AppointmentCreationAttributes {}
+export interface AppointmentInstance extends Model<Appointment, AppointmentCreationAttributes>, AppointmentCreationAttributes {
+  getClient: typeof Model; // Adicione essa propriedade para definir a associação com o modelo do cliente
+  getProfessional: typeof Model; // Adicione essa propriedade para definir a associação com o modelo do profissional
+}
 
 export const Appointment = sequelize.define<AppointmentInstance, Appointment>('appointments', {
   id: {
@@ -34,13 +40,21 @@ export const Appointment = sequelize.define<AppointmentInstance, Appointment>('a
     allowNull: false,
     type: DataTypes.STRING
   },
-  clientId: {
+  client_id: {
     allowNull: false,
-    type: DataTypes.INTEGER
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'clients', // Nome da tabela referenciada (no exemplo, "clients")
+      key: 'id' // Coluna referenciada na tabela do cliente
+    }
   },
-  professionalId: {
+  professional_id: {
     allowNull: false,
-    type: DataTypes.INTEGER
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'professionals', // Nome da tabela referenciada (no exemplo, "professionals")
+      key: 'id' // Coluna referenciada na tabela do profissional
+    }
   },
   services: {
     allowNull: false,
@@ -49,7 +63,11 @@ export const Appointment = sequelize.define<AppointmentInstance, Appointment>('a
 }, {
   hooks: {
     beforeCreate: (appointment) => {
-      appointment.date = new Date(appointment.date)
+      appointment.date = new Date(appointment.date);
     }
   }
 });
+
+// Definir associações com os modelos de cliente e profissional
+Appointment.belongsTo(Client, { foreignKey: 'client_id', as: 'client' });
+Appointment.belongsTo(Professional, { foreignKey: 'professional_id', as: 'professional' });

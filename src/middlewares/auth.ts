@@ -3,9 +3,11 @@ import { JwtPayload } from 'jsonwebtoken'
 import { ClientInstance } from '../models/Client'
 import { jwtService } from '../services/jwtService'
 import { clientService } from '../services/clientService'
+import { ProfessionalInstance } from '../models/Professional'
 
 export interface AuthenticatedRequest extends Request {
   client?: ClientInstance | null
+  professional?: ProfessionalInstance | null
 }
 
 export function ensureAuth(req: AuthenticatedRequest, res: Response, next: NextFunction) {
