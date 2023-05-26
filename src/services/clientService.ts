@@ -12,31 +12,31 @@ export const clientService = {
         return client
     },
 
-    create: async (attibutes: ClientCreationAttributes) => {
-        const client = await Client.create(attibutes)
+    create: async (attributes: ClientCreationAttributes) => {
+        const client = await Client.create(attributes)
 
         return client
     },
 
     update: async (id: number, attibutes: {
-        firstName?: string,
-        lastName?: string,
+        first_name?: string,
+        last_name?: string,
         cpf?: string,
         phone?: string,
         email?: string,
     }) => {
-        const [affectedRows, updatedUsers] = await Client.update(attibutes, { where: { id}, returning: true })
-    
+        const [affectedRows, updatedUsers] = await Client.update(attibutes, { where: { id }, returning: true })
+
         return updatedUsers[0]
     },
 
     updatePassword: async (id: number, password: string) => {
-        const [affectedRows, updatedUsers] = await Client.update({ password }, { 
-            where: { id }, 
+        const [affectedRows, updatedUsers] = await Client.update({ password }, {
+            where: { id },
             returning: true,
-            individualHooks: true 
+            individualHooks: true
         })
-    
+
         return updatedUsers[0]
     }
 }

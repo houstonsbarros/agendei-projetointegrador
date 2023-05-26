@@ -5,7 +5,7 @@ import { clientService } from "../services/clientService"
 export const authController = {
     // POST /auth/register
     register: async (req: Request, res: Response) => {
-        const { firstName, lastName, cpf, phone, email, password } = req.body
+        const { first_name, last_name, cpf, phone, email, password } = req.body
 
         try {
             const clientAlreadyExists = await clientService.findbyEmail(email)
@@ -15,8 +15,8 @@ export const authController = {
             }
 
             const client = await clientService.create({
-                firstName,
-                lastName,
+                first_name,
+                last_name,
                 cpf,
                 phone,
                 email,
@@ -53,7 +53,7 @@ export const authController = {
 
                 const payload = {
                     id: client.id,
-                    firstName: client.firstName,
+                    first_name: client.first_name,
                     email: client.email
                 }
 

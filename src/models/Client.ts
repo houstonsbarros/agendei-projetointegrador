@@ -6,8 +6,8 @@ type CheckPasswordCallback = (err?: Error | undefined, isSame?: boolean) => void
 
 export interface Client {
     id: number
-    firstName: string
-    lastName: string
+    first_name: string
+    last_name: string
     cpf: string
     phone: string
     email: string
@@ -27,11 +27,11 @@ export const Client = sequelize.define<ClientInstance, Client>('clients', {
     primaryKey: true,
     type: DataTypes.INTEGER
   },
-  firstName: {
+  first_name: {
     allowNull: false,
     type: DataTypes.STRING
   },
-  lastName: {
+  last_name: {
     allowNull: false,
     type: DataTypes.STRING
   },
@@ -62,6 +62,8 @@ export const Client = sequelize.define<ClientInstance, Client>('clients', {
       if(client.isNewRecord || client.changed('password')) {
         client.password = await bcrypt.hash(client.password.toString(), 10)
       }
+      client.phone = client.phone.replace(/\D/g, '')
+      client.cpf = client.cpf.replace(/\D/g, '')
     }
   }
 })
