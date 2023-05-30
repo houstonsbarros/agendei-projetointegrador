@@ -18,6 +18,7 @@ export interface ClientCreationAttributes extends Optional<Client, 'id'> {}
 
 export interface ClientInstance extends Model<ClientCreationAttributes, ClientCreationAttributes>, ClientCreationAttributes {
   checkPassword: (password: string, callbackfn: CheckPasswordCallback) => void
+  id: number
 }
 
 export const Client = sequelize.define<ClientInstance, Client>('clients', {
@@ -35,6 +36,11 @@ export const Client = sequelize.define<ClientInstance, Client>('clients', {
     allowNull: false,
     type: DataTypes.STRING
   },
+  cpf: {
+    allowNull: false,
+    unique: true,
+    type: DataTypes.STRING,
+  },
   phone: {
     allowNull: false,
     type: DataTypes.STRING
@@ -47,11 +53,6 @@ export const Client = sequelize.define<ClientInstance, Client>('clients', {
       isEmail: true
     }
   },
-  cpf: {
-    allowNull: false,
-    unique: true,
-    type: DataTypes.STRING,
-  },
   password: {
     allowNull: false,
     type: DataTypes.STRING
@@ -60,7 +61,7 @@ export const Client = sequelize.define<ClientInstance, Client>('clients', {
   hooks: {
     beforeSave: async (client) => {
       if(client.isNewRecord || client.changed('password')) {
-        client.password = await bcrypt.hash(client.password.toString(), 10)
+        client.password = await bcrypt.hash(client.password.toString(), 11)
       }
       client.phone = client.phone.replace(/\D/g, '')
       client.cpf = client.cpf.replace(/\D/g, '')

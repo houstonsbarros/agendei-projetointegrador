@@ -30,6 +30,7 @@ export interface ProfessionalCreationAttributes extends Optional<Professional, '
 
 export interface ProfessionalInstance extends Model<Professional, ProfessionalCreationAttributes>, ProfessionalCreationAttributes {
     checkPassword: (password: string, callbackfn: CheckPasswordCallback) => void
+    addService: (serviceId: number) => void
  }
 
 export const Professional = sequelize.define<ProfessionalInstance, Professional>('professionals', {
@@ -81,6 +82,5 @@ export const Professional = sequelize.define<ProfessionalInstance, Professional>
             professional.phone = professional.phone.replace(/\D/g, '')
             professional.cpf = professional.cpf.replace(/\D/g, '')
         }
-        
     }
 });

@@ -11,11 +11,10 @@ export interface Appointment {
   client_id: number;
   professional_id: number;
   services: {
-    id: number;
     name: string;
     price: number;
     description: string;
-  }[];
+  };
 }
 
 export interface AppointmentCreationAttributes extends Optional<Appointment, 'id'> {}
@@ -58,13 +57,7 @@ export const Appointment = sequelize.define<AppointmentInstance, Appointment>('a
   },
   services: {
     allowNull: false,
-    type: DataTypes.ARRAY(DataTypes.JSON)
-  }
-}, {
-  hooks: {
-    beforeCreate: (appointment) => {
-      appointment.date = new Date(appointment.date);
-    }
+    type: DataTypes.JSON
   }
 });
 

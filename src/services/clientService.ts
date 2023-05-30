@@ -8,7 +8,24 @@ export const clientService = {
                 email
             }
         })
+        return client
+    },
 
+    checkCPF: async (cpf: string) => {
+        const client = await Client.findOne({
+            where: {
+                cpf
+            }
+        })
+        return client
+    },
+
+    checkPhone: async (phone: string) => {
+        const client = await Client.findOne({
+            where: {
+                phone
+            }
+        })
         return client
     },
 

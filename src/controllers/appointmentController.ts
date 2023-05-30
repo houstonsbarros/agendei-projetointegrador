@@ -7,7 +7,12 @@ export const appointmentController = {
     create: async (req: AuthenticatedRequest, res: Response) => {
         const { date, hour, client_id, professional_id, services } = req.body
 
-        const appointment = await appointmentService.create({ date, hour, client_id, professional_id, services })
+        const appointment = await appointmentService.create({ 
+            date, 
+            hour, 
+            client_id, 
+            professional_id, 
+            services })
 
         return res.status(201).json(appointment)
     },

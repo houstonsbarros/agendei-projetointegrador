@@ -1,16 +1,19 @@
 import { Request, Response } from "express"
 import { jwtService } from "../services/jwtService"
 import { clientService } from "../services/clientService"
+import { AuthenticatedRequest } from "../middlewares/auth"
 
-export const authController = {
-    // POST /auth/register
+export const clientController = {
+    // POST /client/register
     register: async (req: Request, res: Response) => {
         const { first_name, last_name, cpf, phone, email, password } = req.body
 
         try {
-            const clientAlreadyExists = await clientService.findbyEmail(email)
+            const emailAlreadyExists = await clientService.findbyEmail(email)
+            const cpfAlreadyExists = await clientService.checkCPF(cpf)
+            const phoneAlreadyExists = await clientService.checkPhone(phone)
 
-            if (clientAlreadyExists) {
+            if (emailAlreadyExists || cpfAlreadyExists || phoneAlreadyExists) {
                 throw new Error('Cliente já cadastrado')
             }
 
@@ -31,7 +34,7 @@ export const authController = {
         }
     },
 
-    // POST /auth/login
+    // POST /client/login
     login: async (req: Request, res: Response) => {
         const { email, password } = req.body
 

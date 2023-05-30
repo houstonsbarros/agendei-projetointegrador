@@ -3,6 +3,7 @@ import { Appointment, AppointmentCreationAttributes } from "../models/Appointmen
 export const appointmentService = {
   create: async (attributes: AppointmentCreationAttributes) => {
     const appointment = await Appointment.create(attributes);
+
     return appointment;
   },
 
@@ -11,12 +12,12 @@ export const appointmentService = {
     hour?: string,
     client_id?: number,
     professional_id?: number,
-    services?: [{
+    services?: {
       id: number;
       name: string;
       price: number;
       description: string;
-    }]
+    }
   }) => {
     const [affectedRows, updatedAppointments] = await Appointment.update(attributes, {
       where: { id },
