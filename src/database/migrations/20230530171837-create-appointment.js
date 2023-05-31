@@ -9,14 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      date: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      hour: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
       client_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
@@ -37,9 +29,28 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      services: {
+      service_id: {
         allowNull: false,
-        type: Sequelize.ARRAY(Sequelize.JSON)
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'services',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      schedule: {
+        allowNull: false,
+        type: Sequelize.JSON
+      },
+      payment: {
+        allowNull: false,
+        type: Sequelize.JSON
+      },
+      status: {
+        allowNull: false,
+        type: Sequelize.ENUM('Finalizado', 'Pendente', 'Cancelado'),
+        defaultValue: 'Pendente'
       },
       created_at: {
         allowNull: false,
@@ -49,16 +60,18 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    })
+    });
 
     await queryInterface.addIndex('appointments', ['client_id']);
     await queryInterface.addIndex('appointments', ['professional_id']);
+    await queryInterface.addIndex('appointments', ['service_id']);
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.removeIndex('appointments', ['client_id']);
     await queryInterface.removeIndex('appointments', ['professional_id']);
-    
-    await queryInterface.dropTable('appointments')
+    await queryInterface.removeIndex('appointments', ['service_id']);
+
+    await queryInterface.dropTable('appointments');
   }
 };

@@ -1,27 +1,31 @@
 import { sequelize } from '../database';
 import { DataTypes, Model, Optional } from 'sequelize';
-
-import { Client } from './Client'; // Importe o modelo do cliente
-import { Professional } from './Professional'; // Importe o modelo do profissional
+import { Client } from './Client';
+import { Professional } from './Professional';
+import { Service } from './Service';
 
 export interface Appointment {
-  id: number;
-  date: Date;
-  hour: string;
-  client_id: number;
-  professional_id: number;
-  services: {
-    name: string;
-    price: number;
-    description: string;
-  };
+  id: number
+  client_id: number
+  professional_id: number
+  service_id: number
+  schedule: {
+    date: Date
+    hour: string
+  }
+  payment: {
+    method: string
+    status: string
+  }
+  status: string
 }
 
 export interface AppointmentCreationAttributes extends Optional<Appointment, 'id'> {}
 
 export interface AppointmentInstance extends Model<Appointment, AppointmentCreationAttributes>, AppointmentCreationAttributes {
-  getClient: typeof Model; // Adicione essa propriedade para definir a associação com o modelo do cliente
-  getProfessional: typeof Model; // Adicione essa propriedade para definir a associação com o modelo do profissional
+  getClient: typeof Model;
+  getProfessional: typeof Model;
+  getServices: typeof Model;
 }
 
 export const Appointment = sequelize.define<AppointmentInstance, Appointment>('appointments', {
@@ -31,36 +35,41 @@ export const Appointment = sequelize.define<AppointmentInstance, Appointment>('a
     primaryKey: true,
     type: DataTypes.INTEGER
   },
-  date: {
-    allowNull: false,
-    type: DataTypes.DATE
-  },
-  hour: {
-    allowNull: false,
-    type: DataTypes.STRING
-  },
   client_id: {
     allowNull: false,
     type: DataTypes.INTEGER,
     references: {
-      model: 'clients', // Nome da tabela referenciada (no exemplo, "clients")
-      key: 'id' // Coluna referenciada na tabela do cliente
+      model: 'clients',
+      key: 'id'
     }
   },
   professional_id: {
     allowNull: false,
     type: DataTypes.INTEGER,
     references: {
-      model: 'professionals', // Nome da tabela referenciada (no exemplo, "professionals")
-      key: 'id' // Coluna referenciada na tabela do profissional
+      model: 'professionals',
+      key: 'id'
     }
   },
-  services: {
+  service_id: {
+    allowNull: false,
+    type: DataTypes.INTEGER,
+  },
+  schedule: {
     allowNull: false,
     type: DataTypes.JSON
+  },
+  payment: {
+    allowNull: false,
+    type: DataTypes.JSON
+  },
+  status: {
+    allowNull: false,
+    type: DataTypes.STRING
   }
 });
 
 // Definir associações com os modelos de cliente e profissional
-Appointment.belongsTo(Client, { foreignKey: 'client_id', as: 'client' });
+Appointment.belongsTo(Client, { foreignKey: 'client_id', as: 'clients' });
 Appointment.belongsTo(Professional, { foreignKey: 'professional_id', as: 'professional' });
+Appointment.belongsTo(Service, { foreignKey: 'service_id', as: 'service' });

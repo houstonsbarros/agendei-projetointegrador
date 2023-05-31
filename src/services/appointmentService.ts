@@ -2,22 +2,35 @@ import { Appointment, AppointmentCreationAttributes } from "../models/Appointmen
 
 export const appointmentService = {
   create: async (attributes: AppointmentCreationAttributes) => {
-    const appointment = await Appointment.create(attributes);
+    const [appointment, created] = await Appointment.findOrCreate({
+      where: {
+        schedule: attributes.schedule,
+      },
+      defaults: attributes
+    });
 
-    return appointment;
+    if(created){
+      return appointment;
+    }
+
+    throw new Error('This schedule is already taken');
   },
 
   update: async (id: number, attributes: {
-    date?: Date,
-    hour?: string,
-    client_id?: number,
-    professional_id?: number,
+    client_id?: number;
+    professional_id?: number;
     services?: {
-      id: number;
-      name: string;
-      price: number;
-      description: string;
-    }
+      service_id: number;
+    };
+    schedule?: {
+      date: Date;
+      hour: string;
+    };
+    payment?: {
+      method: string;
+      status: string;
+    };
+    status?: string;
   }) => {
     const [affectedRows, updatedAppointments] = await Appointment.update(attributes, {
       where: { id },
@@ -32,18 +45,26 @@ export const appointmentService = {
     });
     return appointment;
   },
+  
+  findbyProfessionalId: async (professional_id: number) => {
+    const appointments = await Appointment.findAll({
+      where: { professional_id }
+    });
+    return appointments;
+  },
 
-  listClient: async (client_id: number) => {
+  findbyClientId: async (client_id: number) => {
     const appointments = await Appointment.findAll({
       where: { client_id }
     });
     return appointments;
   },
 
-  listProfessional: async (professional_id: number) => {
+  verifySchedule: async (professional_id: number) => {
     const appointments = await Appointment.findAll({
       where: { professional_id }
     });
+
     return appointments;
-  }
+  },
 };

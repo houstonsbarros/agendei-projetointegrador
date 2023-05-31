@@ -5,32 +5,38 @@ import bcrypt from 'bcrypt'
 type CheckPasswordCallback = (err?: Error | undefined, isSame?: boolean) => void
 
 export interface Professional {
-    id: number;
-    first_name: string;
-    last_name: string;
-    cpf: string;
-    phone: string;
-    email: string;
-    password: string;
-    services: [{
-        id: number;
-        name: string;
-        price: number;
-        description: string;
-    }]
-    schedules: [{
-        id: number;
-        day: string;
-        start_time: string;
-        end_time: string;
-    }]
+    id: number
+    first_name: string
+    last_name: string
+    cpf: string
+    phone: string
+    email: string
+    password: string
+    adress: {
+        street: string
+        number: number
+        complement: string
+        city: string
+        state: string
+        zip_code: string
+    }
+    schedule: {
+        holiday: number,
+        hourStart: number,
+        break: number,
+        timeBreak: number,
+        hourEnd: number
+    }
 }
 
 export interface ProfessionalCreationAttributes extends Optional<Professional, 'id'> { }
 
 export interface ProfessionalInstance extends Model<Professional, ProfessionalCreationAttributes>, ProfessionalCreationAttributes {
     checkPassword: (password: string, callbackfn: CheckPasswordCallback) => void
-    addService: (serviceId: number) => void
+    verifySchedule: (professional_id: number, schedule: {
+        date: Date;
+        hour: string;
+    }) => Promise<ProfessionalInstance[]>
  }
 
 export const Professional = sequelize.define<ProfessionalInstance, Professional>('professionals', {
@@ -64,21 +70,21 @@ export const Professional = sequelize.define<ProfessionalInstance, Professional>
         allowNull: false,
         type: DataTypes.STRING
     },
-    services: {
+    adress: {
         allowNull: false,
-        type: DataTypes.ARRAY(DataTypes.JSON)
+        type: DataTypes.JSON
     },
-    schedules: {
+    schedule: {
         allowNull: false,
-        type: DataTypes.ARRAY(DataTypes.JSON)
+        type: DataTypes.JSON
     }
 }, {
     hooks: {
-        
         beforeCreate: async (professional) => {
             if(professional.isNewRecord || professional.changed('password')) {
                 professional.password = await bcrypt.hash(professional.password.toString(), 10)
             }
+
             professional.phone = professional.phone.replace(/\D/g, '')
             professional.cpf = professional.cpf.replace(/\D/g, '')
         }

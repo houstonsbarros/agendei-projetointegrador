@@ -1,19 +1,15 @@
 import { Request, Response } from "express"
 import { jwtService } from "../services/jwtService"
 import { professionalService } from "../services/professionalService"
+import { sequelize } from "../database"
+import { QueryTypes } from "sequelize"
 
 export const professionalController = {
-    // POST /auth/register
+    // POST /professional/register
     register: async (req: Request, res: Response) => {
-        const { first_name, last_name, cpf, phone, email, password, services, schedules } = req.body
+        const { first_name, last_name, cpf, phone, email, password, adress, schedule } = req.body
 
         try {
-            const clientAlreadyExists = await professionalService.findbyEmail(email)
-
-            if (clientAlreadyExists) {
-                throw new Error('Cliente já cadastrado')
-            }
-
             const client = await professionalService.create({
                 first_name,
                 last_name,
@@ -21,8 +17,21 @@ export const professionalController = {
                 phone,
                 email,
                 password,
-                services,
-                schedules
+                adress: {
+                    street: adress.street,
+                    number: adress.number,
+                    complement: adress.complement,
+                    city: adress.city,
+                    state: adress.state,
+                    zip_code: adress.zip_code
+                },
+                schedule: {
+                    holiday: schedule.holiday,
+                    hourStart: schedule.hourStart,
+                    break: schedule.break,
+                    timeBreak: schedule.timeBreak,
+                    hourEnd: schedule.hourEnd
+                }
             })
 
             return res.status(201).json(client)
@@ -33,18 +42,18 @@ export const professionalController = {
         }
     },
 
-    // POST /auth/login
+    // POST /professional/login
     login: async (req: Request, res: Response) => {
         const { email, password } = req.body
 
         try {
-            const client = await professionalService.findbyEmail(email)
+            const professional = await professionalService.findbyEmail(email)
 
-            if (!client) {
+            if (!professional) {
                 return res.status(401).json({ message: 'E-mail não registrado' })
             }
 
-            client.checkPassword(password, (err, isSame) => {
+            professional.checkPassword(password, (err, isSame) => {
                 if (err) {
                     return res.status(400).json({ message: err.message })
                 }
@@ -54,14 +63,14 @@ export const professionalController = {
                 }
 
                 const payload = {
-                    id: client.id,
-                    first_name: client.first_name,
-                    email: client.email
+                    id: professional.id,
+                    first_name: professional.first_name,
+                    email: professional.email
                 }
 
                 const token = jwtService.signPayload(payload, '1d')
 
-                return res.json({ authenticated: true, client, token })
+                return res.json({ authenticated: true, professional, token })
             })
         } catch (err) {
             if (err instanceof Error) {
@@ -70,13 +79,12 @@ export const professionalController = {
         }
     },
 
-    // POST /professional/addService
-    addService: async (req: Request, res: Response) => {
-        const { id } = req.params
-        const { serviceId } = req.body
+    // PUT /professional/updatePassword
+    updatePassword: async (req: Request, res: Response) => {
+        const { id, password } = req.body
 
         try {
-            const professional = await professionalService.addService(Number(id), Number(serviceId))
+            const professional = await professionalService.updatePassword(id, password)
 
             return res.json(professional)
         } catch (err) {
@@ -84,5 +92,63 @@ export const professionalController = {
                 return res.status(400).json({ message: err.message })
             }
         }
-    }
+    },
+
+    // PUT /professional/updateSchedule
+    updateSchedule: async (req: Request, res: Response) => {
+        const { id, schedule } = req.body
+
+        try {
+            const professional = await professionalService.updateSchedule(id, schedule)
+
+            return res.json(professional)
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message })
+            }
+        }
+    },
+
+    getProfessionals: async (req: Request, res: Response) => {
+        try {
+            const professionals = await professionalService.getProfessionals()
+
+            return res.json(professionals)
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message })
+            }
+        }
+    },
+
+    // GET /professional/appointmentSchedule
+    appointmentSchedule: async (req: Request, res: Response) => {
+        const { id } = req.body
+
+        try {
+            const professional = await professionalService.appointmentSchedule(id)
+
+            return res.json(professional)
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message })
+            }
+        }
+    },
+
+
+    // GET /professional/availableTimes
+    availableTimes: async (req: Request, res: Response) => {
+        const { id } = req.body
+
+        try {
+            const professional = await professionalService.availableTimes(id)
+
+            return res.json(professional)
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message })
+            }
+        }
+    },
 }

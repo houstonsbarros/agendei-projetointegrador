@@ -62,12 +62,12 @@ export const clientController = {
 
                 const token = jwtService.signPayload(payload, '1d')
 
-                return res.json({ authenticated: true, client, token })
+                return res.status(200).json({ authenticated: true, client, token })
             })
         } catch (err) {
             if (err instanceof Error) {
                 return res.status(400).json({ message: err.message })
             }
         }
-    }
+    },
 }

@@ -11,5 +11,3 @@ export const sequelize = new Sequelize({
         underscored: true,
     }
 });
-
-//Rodar migrations: npx sequelize-cli db:migrate

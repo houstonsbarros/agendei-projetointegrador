@@ -33,13 +33,13 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      services: {
+      adress: {
         allowNull: false,
-        type: Sequelize.ARRAY(Sequelize.JSON)
+        type: Sequelize.STRING
       },
-      schedules: {
+      schedule: {
         allowNull: false,
-        type: Sequelize.ARRAY(Sequelize.JSON)
+        type: Sequelize.JSON(Sequelize.INTEGER)
       },
       created_at: {
         allowNull: false,

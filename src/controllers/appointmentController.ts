@@ -5,29 +5,38 @@ import { appointmentService } from "../services/appointmentService";
 
 export const appointmentController = {
     create: async (req: AuthenticatedRequest, res: Response) => {
-        const { date, hour, client_id, professional_id, services } = req.body
+        try {
+            const { client_id, professional_id, service_id, schedule, payment, status } = req.body
 
-        const appointment = await appointmentService.create({ 
-            date, 
-            hour, 
-            client_id, 
-            professional_id, 
-            services })
+            const appointment = await appointmentService.create({
+                client_id,
+                professional_id,
+                service_id,
+                schedule,
+                payment,
+                status
+            })
 
-        return res.status(201).json(appointment)
+            return res.status(201).json(appointment)
+        } catch (error) {
+            return res.status(400).json({ error: error.message })
+        }
     },
 
-    // Crie um módulo que permita o cliente atualizar o seu agendamento.
     update: async (req: AuthenticatedRequest, res: Response) => {
         const { id } = req.params
-        const { date, hour, client_id, professional_id, services } = req.body
+        const { services, schedule, payment, status } = req.body
 
-        const appointment = await appointmentService.update(Number(id), { date, hour, client_id, professional_id, services })
+        const appointment = await appointmentService.update(Number(id), {
+            services,
+            schedule,
+            payment,
+            status
+        })
 
         return res.status(200).json(appointment)
     },
 
-    // Crie um módulo que permita o cliente cancelar o seu agendamento.
     delete: async (req: AuthenticatedRequest, res: Response) => {
         const { id } = req.params
 
@@ -36,26 +45,39 @@ export const appointmentController = {
         return res.status(200).json(appointment)
     },
 
-    // Crie um módulo que permita o cliente listar os seus agendamentos.
-    listClient: async (req: AuthenticatedRequest, res: Response) => {
+    findbyClientId: async (req: AuthenticatedRequest, res: Response) => {
         const clientId = req.client!.id;
 
         if (typeof clientId !== 'number') {
             return res.status(400).json({ error: 'Invalid client ID' });
         }
-    
-        const appointments = await appointmentService.listClient(clientId);
-    
+
+        const appointments = await appointmentService.findbyClientId(clientId);
+
         return res.status(200).json(appointments);
     },
-    
 
-    // Crie um módulo que permita o profissional listar os seus agendamentos.
-    listProfessional: async (req: AuthenticatedRequest, res: Response) => {
+    findbyProfessionalId: async (req: AuthenticatedRequest, res: Response) => {
         const { id } = req.professional!
 
-        const appointments = await appointmentService.listProfessional(Number(id))
+        const appointments = await appointmentService.findbyClientId(Number(id))
 
         return res.status(200).json(appointments)
+    },
+
+    verifySchedule: async (req: AuthenticatedRequest, res: Response) => {
+        const { id } = req.body;
+
+        if (typeof id !== 'number') {
+            return res.status(400).json({ error: 'Invalid ID' });
+        }
+
+        try {
+            const appointments = await appointmentService.verifySchedule(Number(id));
+
+            return res.status(200).json(appointments);
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
     }
 }
