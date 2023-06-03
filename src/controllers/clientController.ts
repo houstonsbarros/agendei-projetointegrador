@@ -70,4 +70,16 @@ export const clientController = {
             }
         }
     },
+
+    // GET /client/current
+    show: async (req: AuthenticatedRequest, res: Response) => {
+        const currentUser = req.client!
+
+        try {
+            return res.status(200).json(currentUser)
+        } catch (error) {
+            
+        }
+    }
+
 }

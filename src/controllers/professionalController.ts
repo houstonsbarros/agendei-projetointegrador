@@ -139,10 +139,13 @@ export const professionalController = {
 
     // GET /professional/availableTimes
     availableTimes: async (req: Request, res: Response) => {
-        const { id } = req.body
+        const { id, date } = req.query
+
+        const parsedId = Number(id);
+        const parsedDate = String(date);
 
         try {
-            const professional = await professionalService.availableTimes(id)
+            const professional = await professionalService.availableTimes(parsedId, parsedDate)
 
             return res.json(professional)
         } catch (err) {

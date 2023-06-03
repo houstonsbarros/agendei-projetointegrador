@@ -85,55 +85,51 @@ export const professionalService = {
 
     },
 
-    availableTimes: async (id: number) => {
+    availableTimes: async (id: number, date: string) => {
         try {
-            // Obter o horário de início e fim do profissional
-            const result = await sequelize.query(
-                `SELECT schedule FROM professionals WHERE id = ${id}`,
-                { type: QueryTypes.SELECT }
-            );
-
-            const appointments = await sequelize.query(
-                `SELECT schedule FROM appointments WHERE professional_id = ${id}`,
-                { type: QueryTypes.SELECT }
-            );
-
-            if (!result || result.length === 0) {
-                throw new Error("Profissional não encontrado");
-            }
-
-
-            const appointmentAs = JSON.parse(JSON.stringify(appointments[0]))
-            const professionalAs = JSON.parse(JSON.stringify(result[0]))
-
-
-            const schedule = professionalAs.schedule
-            const { hourStart, hourEnd } = schedule
-            const breakHour = schedule.break
-            const breakTime = schedule.timeBreak
-
-            const unavailableTimes: string[] = [];
-            const hourUnavailable = appointmentAs.schedule.hour
-
-            const availableTimes: string[] = [];
-            let currentTime = hourStart;
-
-            while (currentTime <= hourEnd) {
-                if (currentTime < breakHour || currentTime >= breakHour + breakTime) {
-                    if(currentTime < 10) {
-                        const timeString = `0${currentTime}:00`;
-                        availableTimes.push(timeString);
-                    } else {
-                        const timeString = `${currentTime}:00`;
+          const result = await sequelize.query(
+            `SELECT schedule FROM professionals WHERE id = ${id}`,
+            { type: QueryTypes.SELECT }
+          );
+      
+          const appointments = await sequelize.query(
+            `SELECT schedule FROM appointments WHERE professional_id = ${id} AND schedule->>'date' = '${date}'`,
+            { type: QueryTypes.SELECT }
+          );
+      
+          if (!result || result.length === 0) {
+            throw new Error("Profissional não encontrado");
+          }
+      
+          const professionalAs = JSON.parse(JSON.stringify(result[0]));
+          const appointmentAs = appointments.map(appointment => JSON.parse(JSON.stringify(appointment)));
+      
+          const schedule = professionalAs.schedule;
+          const { hourStart, hourEnd } = schedule;
+          const breakHour = schedule.break;
+          const breakTime = schedule.timeBreak;
+      
+          const unavailableTimes: string[] = appointmentAs.map(appointment => appointment.schedule.hour);
+      
+          const availableTimes: string[] = [];
+          let currentTime = hourStart;
+      
+          while (currentTime <= hourEnd) {
+            if ( currentTime < breakHour ||currentTime >= breakHour + breakTime) {
+                if(!unavailableTimes.includes(`0${currentTime}:00`)){
+                    if(!unavailableTimes.includes(`${currentTime}:00`)){
+                        const timeString = currentTime < 10 ? `0${currentTime}:00` : `${currentTime}:00`;
                         availableTimes.push(timeString);
                     }
-                }
-                currentTime++;
-              }
 
-            return availableTimes;
+                }
+            }
+            currentTime++;
+          }
+      
+          return availableTimes;
         } catch (error) {
-            throw new Error("Erro ao obter os horários disponíveis do profissional");
+          throw new Error("Erro ao obter os horários disponíveis do profissional");
         }
-    }
+      },
 }

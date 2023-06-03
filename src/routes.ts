@@ -10,6 +10,7 @@ const router = express.Router()
 // Routes for Clients
 router.post('/client/register', clientController.register)
 router.post('/client/login', clientController.login)
+router.get('/client/current', ensureAuth, clientController.show)
 
 // Routes for Professionals
 router.post('/professional/register', professionalController.register)
@@ -20,7 +21,7 @@ router.get('/professional/appointmentSchedule', professionalController.appointme
 router.get('/professional/availableSchedules', professionalController.availableTimes)
 
 // Routes for Services
-router.post('/service/create', serviceController.create)
+router.post('/service/create', ensureAuthViaQuery, serviceController.create)
 router.get('/professional/getServices/:id', serviceController.getServicesByProfessional)
 router.put('/service/update', ensureAuth, serviceController.update)
 router.delete('/service/delete', ensureAuth, serviceController.delete)
