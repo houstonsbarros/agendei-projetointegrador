@@ -6,29 +6,29 @@ import { appointmentService } from "../services/appointmentService";
 export const appointmentController = {
     create: async (req: AuthenticatedRequest, res: Response) => {
         try {
-            const { client_id, professional_id, service_id, schedule, payment, status } = req.body
+            const { client_id, professional_id, services, schedule, payment, status } = req.body
 
             const appointment = await appointmentService.create({
                 client_id,
                 professional_id,
-                service_id,
+                services,
                 schedule,
                 payment,
                 status
             })
 
-            return res.status(201).json(appointment)
+        return res.status(201).json(appointment)
         } catch (error) {
-            return res.status(400).json({ error: error.message })
+            return res.status(400).json({ error: error.message, Appointment: req.body })
         }
     },
 
     update: async (req: AuthenticatedRequest, res: Response) => {
         const { id } = req.params
-        const { services, schedule, payment, status } = req.body
+        const { service_id, schedule, payment, status } = req.body
 
         const appointment = await appointmentService.update(Number(id), {
-            services,
+            service_id,
             schedule,
             payment,
             status

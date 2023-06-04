@@ -12,8 +12,8 @@ export const serviceController = {
             name,
             description,
             price,
-            created_at: new Date(), // Definir o valor atual de data/hora
-            updated_at: new Date() // Definir o valor atual de data/hora
+            created_at: new Date(),
+            updated_at: new Date()
         });
 
         return res.status(201).json(service)
@@ -41,14 +41,18 @@ export const serviceController = {
     },
 
     getServicesByProfessional: async (req: AuthenticatedRequest, res: Response) => {
-        const { id } = req.body;
-        
-        if (typeof id !== 'number') {
-            return res.status(400).json({ error: 'Invalid ID' });
+        const { id } = req.query;
+
+        const parsedId = Number(id);
+
+        try {
+            const services = await serviceService.getServicesByProfessional(parsedId)
+
+            return res.status(200).json(services)
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message })
+            }
         }
-
-        const services = await serviceService.getServicesByProfessional(Number(id))
-
-        return res.status(200).json(services)
     }
 }

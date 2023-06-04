@@ -29,15 +29,9 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      service_id: {
+      services: {
         allowNull: false,
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'services',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        type: Sequelize.ARRAY(Sequelize.INTEGER),
       },
       schedule: {
         allowNull: false,
@@ -64,13 +58,13 @@ module.exports = {
 
     await queryInterface.addIndex('appointments', ['client_id']);
     await queryInterface.addIndex('appointments', ['professional_id']);
-    await queryInterface.addIndex('appointments', ['service_id']);
+    await queryInterface.addIndex('appointments', ['services']);
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.removeIndex('appointments', ['client_id']);
     await queryInterface.removeIndex('appointments', ['professional_id']);
-    await queryInterface.removeIndex('appointments', ['service_id']);
+    await queryInterface.removeIndex('appointments', ['services']);
 
     await queryInterface.dropTable('appointments');
   }

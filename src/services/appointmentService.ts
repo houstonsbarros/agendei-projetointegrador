@@ -2,26 +2,21 @@ import { Appointment, AppointmentCreationAttributes } from "../models/Appointmen
 
 export const appointmentService = {
   create: async (attributes: AppointmentCreationAttributes) => {
-    const [appointment, created] = await Appointment.findOrCreate({
-      where: {
-        schedule: attributes.schedule,
-      },
-      defaults: attributes
-    });
+    const appointment = await Appointment.create(attributes);
 
-    if(created){
-      return appointment;
+    if(!appointment) {
+      throw new Error("Horário indisponível");
     }
 
-    throw new Error('This schedule is already taken');
+    return appointment;
   },
 
   update: async (id: number, attributes: {
     client_id?: number;
     professional_id?: number;
-    services?: {
-      service_id: number;
-    };
+    service_id: [{
+      id: number;
+    }]
     schedule?: {
       date: Date;
       hour: string;
@@ -45,7 +40,7 @@ export const appointmentService = {
     });
     return appointment;
   },
-  
+
   findbyProfessionalId: async (professional_id: number) => {
     const appointments = await Appointment.findAll({
       where: { professional_id }

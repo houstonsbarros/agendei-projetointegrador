@@ -5,19 +5,21 @@ import { Professional } from './Professional';
 import { Service } from './Service';
 
 export interface Appointment {
-  id: number
-  client_id: number
-  professional_id: number
-  service_id: number
+  id: number;
+  client_id: number;
+  professional_id: number;
+  services: [{
+    id: number;
+  }];
   schedule: {
-    date: Date
-    hour: string
-  }
+    date: Date;
+    hour: string;
+  };
   payment: {
-    method: string
-    status: string
-  }
-  status: string
+    method: string;
+    status: string;
+  };
+  status: string;
 }
 
 export interface AppointmentCreationAttributes extends Optional<Appointment, 'id'> {}
@@ -51,9 +53,9 @@ export const Appointment = sequelize.define<AppointmentInstance, Appointment>('a
       key: 'id'
     }
   },
-  service_id: {
+  services: {
     allowNull: false,
-    type: DataTypes.INTEGER,
+    type: DataTypes.ARRAY(DataTypes.INTEGER),
   },
   schedule: {
     allowNull: false,
@@ -72,4 +74,4 @@ export const Appointment = sequelize.define<AppointmentInstance, Appointment>('a
 // Definir associações com os modelos de cliente e profissional
 Appointment.belongsTo(Client, { foreignKey: 'client_id', as: 'clients' });
 Appointment.belongsTo(Professional, { foreignKey: 'professional_id', as: 'professional' });
-Appointment.belongsTo(Service, { foreignKey: 'service_id', as: 'service' });
+Appointment.belongsTo(Service, { foreignKey: 'services', as: 'service' });

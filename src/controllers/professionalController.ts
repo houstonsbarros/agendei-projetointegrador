@@ -136,7 +136,6 @@ export const professionalController = {
         }
     },
 
-
     // GET /professional/availableTimes
     availableTimes: async (req: Request, res: Response) => {
         const { id, date } = req.query
