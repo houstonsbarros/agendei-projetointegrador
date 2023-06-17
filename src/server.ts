@@ -13,9 +13,11 @@ app.use(express.json())
 
 app.use(router);
 
-app.listen(() => {
+const port = process.env.PORT || 4000
+
+app.listen(port, () => {
   sequelize.authenticate().then(() => {
     console.log('Conectado ao Banco de Dados');
   })
-  console.log(`Servidor iniciado`)
+  console.log(`Servidor iniciado na porta ${port}`)
 })
