@@ -1,6 +1,9 @@
 import express from 'express';
 import { sequelize } from './database';
 import { router } from './routes';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express()
 const cors = require('cors');
@@ -13,7 +16,7 @@ app.use(express.json())
 
 app.use(router);
 
-const port = process.env.PORT || 4000
+const port = process.env.PORT
 
 app.listen(port, () => {
   sequelize.authenticate().then(() => {

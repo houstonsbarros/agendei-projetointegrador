@@ -12,9 +12,10 @@ app.use(cors());
 app.use(express_1.default.static('public'));
 app.use(express_1.default.json());
 app.use(routes_1.router);
-app.listen(function () {
+var port = process.env.PORT || 4000;
+app.listen(port, function () {
     database_1.sequelize.authenticate().then(function () {
         console.log('Conectado ao Banco de Dados');
     });
-    console.log("Servidor iniciado");
+    console.log("Servidor iniciado na porta ".concat(port));
 });
