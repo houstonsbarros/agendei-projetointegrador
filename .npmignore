@@ -1,0 +1,7 @@
+mysql2
+pg
+sequelize-typescript
+dist/
+logs/
+temp/
+debug.log
