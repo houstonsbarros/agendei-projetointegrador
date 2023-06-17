@@ -1,10 +1,17 @@
+import { QueryTypes } from "sequelize";
+import { sequelize } from "../database";
 import { Appointment, AppointmentCreationAttributes } from "../models/Appointment";
 
 export const appointmentService = {
   create: async (attributes: AppointmentCreationAttributes) => {
-    const appointment = await Appointment.create(attributes);
+    const [appointment, created] = await Appointment.findOrCreate({
+      where: { 
+         schedule: attributes.schedule,
+       },
+      defaults: attributes
+    });
 
-    if(!appointment) {
+    if(!created) {
       throw new Error("Horário indisponível");
     }
 
@@ -26,11 +33,13 @@ export const appointmentService = {
       status: string;
     };
     status?: string;
+
   }) => {
     const [affectedRows, updatedAppointments] = await Appointment.update(attributes, {
       where: { id },
       returning: true
     });
+
     return updatedAppointments[0];
   },
 
@@ -62,4 +71,25 @@ export const appointmentService = {
 
     return appointments;
   },
+
+  clientAppointments: async (client_id: number) => {
+    const appointments = await sequelize.query(
+      `SELECT a.schedule, a.payment, a.status, sum(s.price) AS total_price, 
+      string_agg(s.name, ', ') AS service_names, 
+      CONCAT(c.first_name, ' ', c.last_name) AS client_name, 
+      CONCAT(p.first_name, ' ', p.last_name) AS professional_name
+      FROM appointments a
+      JOIN services s ON s.id = ANY(a.services)
+      JOIN clients c ON c.id = a.client_id
+      JOIN professionals p ON p.id = a.professional_id
+      WHERE a.client_id = ${client_id}
+      AND a.status = 'Pendente'
+      AND a.schedule->>'date' >= '${new Date().toISOString().slice(0, 10)}'
+      GROUP BY a.id, c.id, p.id
+      `,
+      { type: QueryTypes.SELECT }
+    );
+
+    return appointments;
+  }
 };

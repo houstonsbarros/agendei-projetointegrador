@@ -77,9 +77,10 @@ export const clientController = {
 
         try {
             return res.status(200).json(currentUser)
-        } catch (error) {
-            
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message })
+            }
         }
     }
-
 }

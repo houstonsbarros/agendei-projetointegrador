@@ -35,14 +35,14 @@ export const clientService = {
         return client
     },
 
-    update: async (id: number, attibutes: {
+    update: async (id: number, attributes: {
         first_name?: string,
         last_name?: string,
         cpf?: string,
         phone?: string,
         email?: string,
     }) => {
-        const [affectedRows, updatedUsers] = await Client.update(attibutes, { where: { id }, returning: true })
+        const [affectedRows, updatedUsers] = await Client.update(attributes, { where: { id }, returning: true })
 
         return updatedUsers[0]
     },

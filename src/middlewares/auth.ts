@@ -30,26 +30,3 @@ export function ensureAuth(req: AuthenticatedRequest, res: Response, next: NextF
     })
   })
 }
-
-export function ensureAuthViaQuery(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  const { token } = req.query
-
-  if (!token) {
-    return res.status(401).json({ message: 'Não autorizado: nenhum token encontrado' })
-  }
-
-  if (typeof token !== 'string') {
-    return res.status(400).json({ message: 'O parâmetro token deve ser do tipo string' })
-  }
-
-  jwtService.verifyToken(token, (err, decoded) => {
-    if (err || typeof decoded === 'undefined') {
-      return res.status(401).json({ message: 'Não autorizado: token inválido' })
-    }
-
-    clientService.findbyEmail((decoded as JwtPayload).email).then(client => {
-      req.client = client
-      next()
-    })
-  })
-}

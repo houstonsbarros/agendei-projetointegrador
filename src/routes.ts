@@ -1,6 +1,6 @@
 import express from 'express'
 import { clientController } from './controllers/clientController'
-import { ensureAuth, ensureAuthViaQuery } from './middlewares/auth'
+import { ensureAuth } from './middlewares/auth'
 import { appointmentController } from './controllers/appointmentController'
 import { professionalController } from './controllers/professionalController'
 import { serviceController } from './controllers/serviceController'
@@ -15,7 +15,7 @@ router.get('/client/current', ensureAuth, clientController.show)
 // Routes for Professionals
 router.post('/professional/register', professionalController.register)
 router.post('/professional/login', professionalController.login)
-router.get('/professional/getProfessionals', professionalController.getProfessionals)
+router.get('/professional/getProfessionals', ensureAuth, professionalController.getProfessionals)
 router.put('/professional/updatePassword', ensureAuth, professionalController.updatePassword)
 router.get('/professional/appointmentSchedule', professionalController.appointmentSchedule)
 router.get('/professional/availableSchedules', professionalController.availableTimes)
@@ -29,9 +29,10 @@ router.delete('/service/delete', ensureAuth, serviceController.delete)
 // Routes for Appointments
 router.post('/appointment/create', appointmentController.create)
 router.get('/appointment/findByClient', ensureAuth, appointmentController.findbyClientId)
-router.get('/appointment/findByProfessional', ensureAuthViaQuery, appointmentController.findbyProfessionalId)
+router.get('/appointment/findByProfessional', appointmentController.findbyProfessionalId)
 router.put('/appointment/update', ensureAuth, appointmentController.update)
 router.delete('/appointment/delete', ensureAuth, appointmentController.delete)
 router.get('/appointment/verifySchedule', appointmentController.verifySchedule)
+router.get('/client/agendamentos', ensureAuth, appointmentController.clientAppointments)
 
 export { router }

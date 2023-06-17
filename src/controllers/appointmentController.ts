@@ -17,9 +17,9 @@ export const appointmentController = {
                 status
             })
 
-        return res.status(201).json(appointment)
+            return res.status(201).json(appointment)
         } catch (error) {
-            return res.status(400).json({ error: error.message, Appointment: req.body })
+            return res.status(400).json({ error: error.message })
         }
     },
 
@@ -79,5 +79,13 @@ export const appointmentController = {
         } catch (error) {
             return res.status(400).json({ error: error.message });
         }
+    },
+
+    clientAppointments: async (req: AuthenticatedRequest, res: Response) => {
+        const { id } = req.client!
+
+        const appointments = await appointmentService.clientAppointments(Number(id))
+
+        return res.status(200).json(appointments)
     }
 }

@@ -121,7 +121,6 @@ export const professionalService = {
                         const timeString = currentTime < 10 ? `0${currentTime}:00` : `${currentTime}:00`;
                         availableTimes.push(timeString);
                     }
-
                 }
             }
             currentTime++;
@@ -131,5 +130,5 @@ export const professionalService = {
         } catch (error) {
           throw new Error("Erro ao obter os horários disponíveis do profissional");
         }
-      },
+    },
 }
