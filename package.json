@@ -28,7 +28,7 @@
   "scripts": {
     "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts",
     "build": "rm -rf ./dist && tsc",
-    "start": "ts-node-dev --transpile-only dist/server.js"
+    "start": "node ./dist/server.js"
   },
   "engines": {
     "node": "v18.16.0",
