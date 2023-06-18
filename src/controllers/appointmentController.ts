@@ -92,8 +92,11 @@ export const appointmentController = {
     clientAppointmentByID: async (req: AuthenticatedRequest, res: Response) => {
         const { id } = req.client!
         const { appointmentId } = req.query
+        
+        const parsedId = Number(id)
+        const parsedAppointmentId = Number(appointmentId)
 
-        const appointment = await appointmentService.clientAppointmentsByID(Number(id), Number(appointmentId))
+        const appointment = await appointmentService.clientAppointmentsByID(parsedId, parsedAppointmentId)
 
         return res.status(200).json(appointment)
     }
