@@ -92,7 +92,7 @@ export const appointmentService = {
     JOIN
       professionals p ON p.id = a.professional_id
     WHERE
-      WHERE a.client_id = ${client_id}
+      a.client_id = ${client_id}
       AND a.status = 'Pendente'
       AND a.schedule->>'date' >= '${new Date().toISOString().slice(0, 10)}'
       GROUP BY a.id, c.id, p.id
