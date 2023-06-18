@@ -23,7 +23,7 @@ export function ensureAuthProfessional(req: AuthenticatedRequestProfessional, re
       }
   
       professionalService.findbyEmail((decoded as JwtPayload).email).then(professional => {
-        if (professional && professional.isProfessional) {
+        if (professional) {
           req.professional = professional;
           next();
         } else {
