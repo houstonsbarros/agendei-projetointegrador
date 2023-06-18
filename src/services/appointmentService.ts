@@ -77,8 +77,8 @@ export const appointmentService = {
       `SELECT a.schedule, a.payment, a.status, sum(s.price) AS total_price, 
       string_agg(s.name, ', ') AS service_names, 
       CONCAT(c.first_name, ' ', c.last_name) AS client_name, 
-      CONCAT(p.first_name, ' ', p.last_name) AS professional_name
-      FROM appointments a
+      CONCAT(p.first_name, ' ', p.last_name) AS professional_name,
+      CONCAT(p.adress AS professional_adress
       JOIN services s ON s.id = ANY(a.services)
       JOIN clients c ON c.id = a.client_id
       JOIN professionals p ON p.id = a.professional_id
