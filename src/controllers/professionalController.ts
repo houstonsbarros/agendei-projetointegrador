@@ -53,7 +53,7 @@ export const professionalController = {
                 return res.status(401).json({ message: 'E-mail não registrado' })
             }
 
-            professional.checkPassword(password, (err, isSame) => {
+            professional.checkPasswordProfessional(password, (err, isSame) => {
                 if (err) {
                     return res.status(400).json({ message: err.message })
                 }

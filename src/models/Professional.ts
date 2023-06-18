@@ -32,7 +32,7 @@ export interface Professional {
 export interface ProfessionalCreationAttributes extends Optional<Professional, 'id'> {}
 
 export interface ProfessionalInstance extends Model<Professional, ProfessionalCreationAttributes>, ProfessionalCreationAttributes {
-    checkPassword: (password: string, callbackfn: CheckPasswordCallback) => void
+    checkPasswordProfessional: (password: string, callbackfn: CheckPasswordCallback) => void
 
     verifySchedule: (professional_id: number, schedule: {
         date: Date;
