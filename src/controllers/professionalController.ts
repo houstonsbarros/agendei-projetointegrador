@@ -47,13 +47,13 @@ export const professionalController = {
         const { email, password } = req.body
 
         try {
-            const profissional = await professionalService.findbyEmail(email)
+            const profissional_1 = await professionalService.findbyEmail(email)
 
-            if (!profissional) {
+            if (!profissional_1) {
                 return res.status(401).json({ message: 'E-mail não registrado' })
             }
 
-            profissional.checkPasswordProfessional(password, (err, isSame) => {
+            profissional_1.checkPasswordProfessional(password, (err, isSame) => {
                 if (err) {
                     return res.status(400).json({ message: err.message })
                 }
@@ -63,14 +63,14 @@ export const professionalController = {
                 }
 
                 const payload = {
-                    id: profissional.id,
-                    first_name: profissional.first_name,
-                    email: profissional.email
+                    id: profissional_1.id,
+                    first_name: profissional_1.first_name,
+                    email: profissional_1.email
                 }
 
                 const token = jwtService.signPayload(payload, '1d')
 
-                return res.status(200).json({ authenticated: true, profissional, token })
+                return res.status(200).json({ authenticated: true, profissional_1, token })
             })
         } catch (err) {
             if (err instanceof Error) {
