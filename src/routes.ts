@@ -4,6 +4,7 @@ import { ensureAuth } from './middlewares/auth'
 import { appointmentController } from './controllers/appointmentController'
 import { professionalController } from './controllers/professionalController'
 import { serviceController } from './controllers/serviceController'
+import { ensureAuthProfessional } from './middlewares/authProfessional'
 
 const router = express.Router()
 
@@ -21,7 +22,7 @@ router.get('/professional/appointmentSchedule', professionalController.appointme
 router.get('/professional/availableSchedules', professionalController.availableTimes)
 
 // Routes for Services
-router.post('/service/create', ensureAuth, serviceController.create)
+router.post('/service/create', ensureAuthProfessional, serviceController.create)
 router.get('/professional/getServices/', serviceController.getServicesByProfessional)
 router.put('/service/update', ensureAuth, serviceController.update)
 router.delete('/service/delete', ensureAuth, serviceController.delete)

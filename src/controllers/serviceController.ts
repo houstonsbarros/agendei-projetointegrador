@@ -2,9 +2,10 @@ import { Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/auth";
 import { Service } from "../models/Service";
 import { serviceService } from "../services/serviceService";
+import { AuthenticatedRequestProfessional } from "../middlewares/authProfessional";
 
 export const serviceController = {
-    create: async (req: AuthenticatedRequest, res: Response) => {
+    create: async (req: AuthenticatedRequestProfessional, res: Response) => {
         const { professional_id, name, description, price, created_at, updated_at } = req.body
 
         const service = await serviceService.create({ 
