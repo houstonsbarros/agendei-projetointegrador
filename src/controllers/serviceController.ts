@@ -6,18 +6,23 @@ import { AuthenticatedRequestProfessional } from "../middlewares/authProfessiona
 
 export const serviceController = {
     create: async (req: AuthenticatedRequestProfessional, res: Response) => {
-        const { professional_id, name, description, price, created_at, updated_at } = req.body
-
-        const service = await serviceService.create({ 
-            professional_id,
-            name,
-            description,
-            price,
-            created_at: new Date(),
-            updated_at: new Date()
+        const { professional_id, name, description, price } = req.body;
+        const { id } = req.professional!;
+      
+        if (id !== professional_id) {
+            return res.status(400).json({ error: 'Invalid professional ID' });
+        }
+      
+        const service = await serviceService.create({
+          professional_id,
+          name,
+          description,
+          price,
+          created_at: new Date(),
+          updated_at: new Date()
         });
-
-        return res.status(201).json(service)
+      
+        return res.status(201).json(service);
     },
 
     update: async (req: AuthenticatedRequest, res: Response) => {
