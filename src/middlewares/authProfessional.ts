@@ -22,9 +22,16 @@ export function ensureAuthProfessional(req: AuthenticatedRequestProfessional, re
         return res.status(401).json({ message: 'Não autorizado: token inválido' });
       }
   
-      professionalService.findbyEmail((decoded as { email: string }).email).then(professional => {
+      professionalService.findbyEmail((decoded as JwtPayload).email).then(professional => {
+        if (professional && professional.isProfessional) {
           req.professional = professional;
           next();
+        } else {
+          return res.status(401).json({ 
+            professional: professional,
+            message: 'Não autorizado: usuário não é um profissional'
+         });
+        }
       }).catch(error => {
         return res.status(500).json({ message: 'Erro ao verificar o profissional', error: error.message });
       });
