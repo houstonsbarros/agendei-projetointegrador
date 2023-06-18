@@ -14,6 +14,16 @@ export const professionalService = {
         return professional
     },
 
+    isProfessional: async (id: number) => {
+        const professional = await Professional.findOne({
+            where: {
+                id
+            }
+        })
+
+        return professional
+    },
+
     create: async (attributes: ProfessionalCreationAttributes) => {
         const professional = await Professional.create(attributes)
 
