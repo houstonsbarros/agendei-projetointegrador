@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { jwtService } from "../services/jwtService"
+import { jwtProfessional, jwtService } from "../services/jwtService"
 import { professionalService } from "../services/professionalService"
 import { sequelize } from "../database"
 import { QueryTypes } from "sequelize"
@@ -59,7 +59,7 @@ export const professionalController = {
                 email: professional.email
             }
 
-            const token = jwtService.signPayload(payload, '1d')
+            const token = jwtProfessional.signPayload(payload, '1d')
 
             return res.json({ authenticated: true, professional, token })
         } catch (err) {
