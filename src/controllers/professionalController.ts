@@ -47,13 +47,13 @@ export const professionalController = {
         const { email, password } = req.body
 
         try {
-            const professional = await professionalService.findbyEmail(email)
+            const profissional = await professionalService.findbyEmail(email)
 
-            if (!professional) {
+            if (!profissional) {
                 return res.status(401).json({ message: 'E-mail não registrado' })
             }
-            
-            professional.checkPasswordProfessional(password, (err, isSame) => {
+
+            profissional.checkPasswordProfessional(password, (err, isSame) => {
                 if (err) {
                     return res.status(400).json({ message: err.message })
                 }
