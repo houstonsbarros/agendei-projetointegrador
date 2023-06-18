@@ -53,25 +53,15 @@ export const professionalController = {
                 return res.status(401).json({ message: 'E-mail não registrado' })
             }
 
-            professional.checkPasswordProfessional(password, (err, isSame) => {
-                if (err) {
-                    return res.status(400).json({ message: err.message })
-                }
+            const payload = {
+                id: professional.id,
+                first_name: professional.first_name,
+                email: professional.email
+            }
 
-                if (!isSame) {
-                    return res.status(401).json({ message: 'Senha incorreta' })
-                }
+            const token = jwtService.signPayload(payload, '1d')
 
-                const payload = {
-                    id: professional.id,
-                    first_name: professional.first_name,
-                    email: professional.email
-                }
-
-                const token = jwtService.signPayload(payload, '1d')
-
-                return res.json({ authenticated: true, professional, token })
-            })
+            return res.json({ authenticated: true, professional, token })
         } catch (err) {
             if (err instanceof Error) {
                 return res.status(400).json({ message: err.message })
