@@ -63,14 +63,14 @@ export const professionalController = {
                 }
 
                 const payload = {
-                    id: professional.id,
-                    first_name: professional.first_name,
-                    email: professional.email
+                    id: profissional.id,
+                    first_name: profissional.first_name,
+                    email: profissional.email
                 }
 
                 const token = jwtService.signPayload(payload, '1d')
 
-                return res.status(200).json({ authenticated: true, professional, token })
+                return res.status(200).json({ authenticated: true, profissional, token })
             })
         } catch (err) {
             if (err instanceof Error) {
