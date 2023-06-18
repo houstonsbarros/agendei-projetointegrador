@@ -61,7 +61,7 @@ export const professionalController = {
 
             const token = jwtProfessional.signPayload(payload, '1d')
 
-            return res.json({ authenticated: true, professional, token })
+            return res.json({ authenticated: true, professional, token, isProfessional: true })
         } catch (err) {
             if (err instanceof Error) {
                 return res.status(400).json({ message: err.message })
