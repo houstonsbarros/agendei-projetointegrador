@@ -34,5 +34,6 @@ router.put('/appointment/update', ensureAuth, appointmentController.update)
 router.delete('/appointment/delete', ensureAuth, appointmentController.delete)
 router.get('/appointment/verifySchedule', appointmentController.verifySchedule)
 router.get('/client/agendamentos', ensureAuth, appointmentController.clientAppointments)
+router.get('/client/finalizado', ensureAuth, appointmentController.clientAppointmentByID)
 
 export { router }
