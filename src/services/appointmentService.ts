@@ -5,13 +5,13 @@ import { Appointment, AppointmentCreationAttributes } from "../models/Appointmen
 export const appointmentService = {
   create: async (attributes: AppointmentCreationAttributes) => {
     const [appointment, created] = await Appointment.findOrCreate({
-      where: { 
-         schedule: attributes.schedule,
-       },
+      where: {
+        schedule: attributes.schedule,
+      },
       defaults: attributes
     });
 
-    if(!created) {
+    if (!created) {
       throw new Error("Horário indisponível");
     }
 
@@ -74,15 +74,24 @@ export const appointmentService = {
 
   clientAppointments: async (client_id: number) => {
     const appointments = await sequelize.query(
-      `SELECT a.schedule, a.payment, a.status, sum(s.price) AS total_price, 
-      string_agg(s.name, ', ') AS service_names, 
-      CONCAT(c.first_name, ' ', c.last_name) AS client_name, 
+      `SELECT
+      a.schedule,
+      a.payment,
+      a.status,
+      SUM(s.price) AS total_price,
+      STRING_AGG(s.name, ', ') AS service_names,
+      CONCAT(c.first_name, ' ', c.last_name) AS client_name,
       CONCAT(p.first_name, ' ', p.last_name) AS professional_name,
       p.adress AS professional_adress
-      FROM appointments a, services s, clients c, professionals p
-      JOIN services s ON s.id = ANY(a.services)
-      JOIN clients c ON c.id = a.client_id
-      JOIN professionals p ON p.id = a.professional_id
+    FROM
+      appointments a
+    JOIN
+      services s ON s.id = ANY(a.services)
+    JOIN
+      clients c ON c.id = a.client_id
+    JOIN
+      professionals p ON p.id = a.professional_id
+    WHERE
       WHERE a.client_id = ${client_id}
       AND a.status = 'Pendente'
       AND a.schedule->>'date' >= '${new Date().toISOString().slice(0, 10)}'
