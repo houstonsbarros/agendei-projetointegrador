@@ -2,7 +2,7 @@ import { sequelize } from '../database';
 import { DataTypes, Model, Optional } from 'sequelize';
 import bcrypt from 'bcrypt'
 
-type CheckPasswordCallback = (err?: Error | undefined, isSame?: boolean) => void
+type CheckPasswordCallback = (err?: Error | undefined, match?: boolean) => void
 
 export interface Professional {
     id: number
