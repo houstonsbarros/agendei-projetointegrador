@@ -75,8 +75,10 @@ export const professionalController = {
 
             return res.status(200).json({ authenticated: false, profissional })
         } catch (err) {
+            const profissional = await professionalService.findbyEmail(email)
+
             if (err instanceof Error) {
-                return res.status(400).json({ message: err.message, authenticated: false })
+                return res.status(400).json({ message: err.message, authenticated: false, profissional })
             }
         }
     },
