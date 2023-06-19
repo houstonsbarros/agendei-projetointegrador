@@ -93,7 +93,8 @@ export const appointmentService = {
       professionals p ON p.id = a.professional_id
     WHERE
       a.client_id = ${client_id}
-      GROUP BY a.id, c.id, p.id
+    GROUP BY a.id, c.id, p.id
+    ORDER BY (a.schedule->>'date')::date ASC, (a.schedule->>'time')::time ASC;
       `,
       { type: QueryTypes.SELECT }
     );
