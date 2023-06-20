@@ -90,6 +90,14 @@ export const appointmentController = {
         return res.status(200).json(appointments)
     },
 
+    professionalAppointments: async (req: AuthenticatedRequestProfessional, res: Response) => {
+        const { id } = req.professional!
+
+        const appointments = await appointmentService.professionalAppointments(Number(id))
+
+        return res.status(200).json(appointments)
+    },
+
     clientAppointmentByID: async (req: AuthenticatedRequest, res: Response) => {
         const { id } = req.client!
         const { appointmentId } = req.query

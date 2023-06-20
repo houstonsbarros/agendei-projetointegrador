@@ -37,6 +37,7 @@ router.put('/appointment/update', ensureAuth, appointmentController.update)
 router.delete('/appointment/delete', ensureAuth, appointmentController.delete)
 router.get('/appointment/verifySchedule', appointmentController.verifySchedule)
 router.get('/client/agendamentos', ensureAuth, appointmentController.clientAppointments)
+router.get('/professional/agendamentos', ensureAuthProfessional, appointmentController.professionalAppointments)
 router.get('/client/finalizado', ensureAuth, appointmentController.clientAppointmentByID)
 router.get('/professional/reports', ensureAuthProfessional, appointmentController.reports)
 

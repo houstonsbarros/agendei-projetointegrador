@@ -110,6 +110,44 @@ export const appointmentService = {
     return appointments;
   },
 
+  professionalAppointments: async (professional_id: number) => {
+    const appointments = await sequelize.query(
+      `SELECT
+      a.schedule,
+      a.payment,
+      a.status,
+      SUM(s.price) AS total_price,
+      STRING_AGG(s.name, ', ') AS service_names,
+      CONCAT(c.first_name, ' ', c.last_name) AS client_name,
+      CONCAT(p.first_name, ' ', p.last_name) AS professional_name,
+      c.adress AS client_adress
+    FROM
+      appointments a
+    JOIN
+      services s ON s.id = ANY(a.services)
+    JOIN
+      clients c ON c.id = a.client_id
+    JOIN
+      professionals p ON p.id = a.professional_id
+    WHERE
+      a.professional_id = ${professional_id}
+    GROUP BY a.id, c.id, p.id
+    ORDER BY
+      CASE
+        WHEN a.status = 'Pendente' THEN 1
+        WHEN a.status = 'Finalizado' THEN 2
+        WHEN a.status = 'Cancelado' THEN 3
+        ELSE 4
+      END,
+      (a.schedule->>'date')::date ASC,
+      (a.schedule->>'time')::time ASC;
+      `,
+      { type: QueryTypes.SELECT }
+    );
+
+    return appointments;
+  },
+
   clientAppointmentsByID: async (client_id: number, id: number) => {
     const appointments = await sequelize.query(
       `SELECT a.schedule, a.payment, a.status, sum(s.price) AS total_price, 
