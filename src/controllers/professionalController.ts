@@ -141,9 +141,9 @@ export const professionalController = {
         const parsedDate = String(date);
 
         try {
-            const professional = await professionalService.appointmentSchedule(parsedId, parsedDate)
+            const professional = await professionalService.appointmentSchedule(Number(parsedId), parsedDate)
 
-            return res.json(professional)
+            return res.json({professional, id, date})
         } catch (err) {
             if (err instanceof Error) {
                 return res.status(400).json({ message: err.message })
