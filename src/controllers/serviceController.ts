@@ -36,9 +36,11 @@ export const serviceController = {
     delete: async (req: AuthenticatedRequest, res: Response) => {
         const { id } = req.params
 
-        const service = await serviceService.delete(Number(id))
+        const parsedId = Number(id)
 
-        return res.status(200).json(service)
+        const service = await serviceService.delete(parsedId)
+
+        return res.status(200).json({service, parsedId})
     },
 
     getServicesByProfessional: async (req: AuthenticatedRequest, res: Response) => {
