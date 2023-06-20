@@ -105,7 +105,7 @@ export const appointmentController = {
     reports: async (req: AuthenticatedRequestProfessional, res: Response) => {
         const { id } = req.professional!
 
-        const appointments = await appointmentService.clientAppointments(Number(id))
+        const appointments = await appointmentService.reports(Number(id))
 
         return res.status(200).json(appointments)
     }
