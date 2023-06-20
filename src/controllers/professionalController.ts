@@ -3,6 +3,7 @@ import { jwtProfessional, jwtService } from "../services/jwtService"
 import { professionalService } from "../services/professionalService"
 import { sequelize } from "../database"
 import { QueryTypes } from "sequelize"
+import { AuthenticatedRequestProfessional } from "../middlewares/authProfessional"
 
 export const professionalController = {
     // POST /professional/register
@@ -74,6 +75,19 @@ export const professionalController = {
             return res.status(200).json({ authenticated: true, profissional, token });
         } catch (err) {
             return res.status(400).json({ message: err.message, authenticated: false });
+        }
+    },
+
+    // GET /professional/current
+    show: async (req: AuthenticatedRequestProfessional, res: Response) => {
+        const currentUser = req.professional!
+
+        try {
+            return res.status(200).json(currentUser)
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message })
+            }
         }
     },
 

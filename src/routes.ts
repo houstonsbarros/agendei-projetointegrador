@@ -16,6 +16,7 @@ router.get('/client/current', ensureAuth, clientController.show)
 // Routes for Professionals
 router.post('/professional/register', professionalController.register)
 router.post('/professional/login', professionalController.login)
+router.get('/professional/current', ensureAuthProfessional, professionalController.show)
 router.get('/professional/getProfessionals', ensureAuth, professionalController.getProfessionals)
 router.put('/professional/updatePassword', ensureAuthProfessional, professionalController.updatePassword)
 router.get('/professional/appointmentSchedule', ensureAuthProfessional, professionalController.appointmentSchedule)
