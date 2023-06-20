@@ -80,7 +80,6 @@ export const professionalService = {
                 `SELECT schedule FROM professionals WHERE id = 1`,
                 { type: QueryTypes.SELECT }
             );
-
             const appointments = await sequelize.query(
                 `SELECT schedule FROM appointments WHERE professional_id = 1 AND schedule->>'date' = '${date}'`,
                 { type: QueryTypes.SELECT }
@@ -103,13 +102,14 @@ export const professionalService = {
             const timeInterval = 15; // Intervalo de tempo em minutos
 
             const availableTimes: string[] = [];
-            let currentTime = timeInterval;
+            let currentTime = hourStart;
+            let nextTime = timeInterval;
 
             while (currentTime <= hourEnd && currentTime % timeInterval === 0) {
                 if (currentTime < breakHour || currentTime >= breakHour + breakTime) {
-                    if (!unavailableTimes.includes(`0${currentTime}:00`)) {
-                        if (!unavailableTimes.includes(`${currentTime}:00`)) {
-                            const timeString = `${currentTime.toString().padStart(2, '0')}:00`;
+                    if (!unavailableTimes.includes(`0${currentTime}:${nextTime}`) && !unavailableTimes.includes(`${currentTime}:00}`)) {
+                        if (!unavailableTimes.includes(`${currentTime}:${nextTime}`) && !unavailableTimes.includes(`${currentTime}:00}`)) {
+                            const timeString = `${currentTime.toString().padStart(2, '0')}:${nextTime.toString().padStart(2, '0')}}`;
                             availableTimes.push(timeString);
                         }
                     }
