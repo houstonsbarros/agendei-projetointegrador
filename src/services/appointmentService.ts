@@ -120,7 +120,6 @@ export const appointmentService = {
       STRING_AGG(s.name, ', ') AS service_names,
       CONCAT(c.first_name, ' ', c.last_name) AS client_name,
       CONCAT(p.first_name, ' ', p.last_name) AS professional_name,
-      c.adress AS client_adress
     FROM
       appointments a
     JOIN
