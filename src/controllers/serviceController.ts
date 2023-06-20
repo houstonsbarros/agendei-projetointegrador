@@ -20,11 +20,11 @@ export const serviceController = {
         return res.status(201).json(service);
     },
 
-    update: async (req: AuthenticatedRequest, res: Response) => {
-        const { id } = req.params
+    update: async (req: AuthenticatedRequestProfessional, res: Response) => {
+        const serviceId = parseInt(req.params.id);
         const { name, description, price } = req.body
 
-        const service = await serviceService.update(Number(id), {
+        const service = await serviceService.update(serviceId, {
             name,
             description,
             price
