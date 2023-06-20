@@ -133,16 +133,18 @@ export const appointmentService = {
   reports: async (professional_id: number) => {
     const reports = await sequelize.query(
       `SELECT
-      COUNT(DISTINCT client_id) AS total_clientes,
+      COUNT(DISTINCT a.client_id) AS total_clientes,
       COUNT(*) AS total_agendamentos,
-      COUNT(CASE WHEN (schedule->>'data')::date = CURRENT_DATE THEN 1 END) AS total_agendamentos_dia_atual,
-      COUNT(CASE WHEN status = 'Finalizado' THEN 1 END) AS total_agendamentos_finalizados,
-      COUNT(CASE WHEN status = 'Pendente' THEN 1 END) AS total_agendamentos_pendentes,
-      COUNT(CASE WHEN status = 'Cancelado' THEN 1 END) AS total_agendamentos_cancelados
-      FROM
-          appointments
-      WHERE
-          professional_id = ${professional_id};
+      COUNT(CASE WHEN (a.schedule->>'data')::date = CURRENT_DATE THEN 1 END) AS total_agendamentos_dia_atual,
+      COUNT(CASE WHEN a.status = 'Finalizado' THEN 1 END) AS total_agendamentos_finalizados,
+      COUNT(CASE WHEN a.status = 'Pendente' THEN 1 END) AS total_agendamentos_pendentes,
+      COUNT(CASE WHEN a.status = 'Cancelado' THEN 1 END) AS total_agendamentos_cancelados,
+      SUM(CASE WHEN a.status = 'Finalizado' THEN s.price ELSE 0 END) AS total_valor_servicos_finalizados
+  FROM
+      appointments a
+      JOIN services s ON s.id = ANY(a.services)
+  WHERE
+      a.professional_id = ${professional_id};
       `,
       { type: QueryTypes.SELECT }
     );
