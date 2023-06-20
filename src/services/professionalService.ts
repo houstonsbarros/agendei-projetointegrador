@@ -5,15 +5,18 @@ import { ProfessionalCreationAttributes } from "../models/Professional"
 
 export const professionalService = {
     findbyEmail: async (email: string) => {
-        const professional = await Professional.findOne({
-            where: {
-                email
-            }
-        })
-
-        return professional
+        try {
+            const profissional = await Professional.findOne({
+                where: {
+                    email
+                }
+            });
+            return profissional;
+        } catch (err) {
+            throw new Error('Erro ao buscar o Profissional por email');
+        }
     },
-    
+
     create: async (attributes: ProfessionalCreationAttributes) => {
         const professional = await Professional.create(attributes)
 
@@ -87,48 +90,48 @@ export const professionalService = {
 
     availableTimes: async (id: number, date: string) => {
         try {
-          const result = await sequelize.query(
-            `SELECT schedule FROM professionals WHERE id = ${id}`,
-            { type: QueryTypes.SELECT }
-          );
-      
-          const appointments = await sequelize.query(
-            `SELECT schedule FROM appointments WHERE professional_id = ${id} AND schedule->>'date' = '${date}'`,
-            { type: QueryTypes.SELECT }
-          );
-      
-          if (!result || result.length === 0) {
-            throw new Error("Profissional não encontrado");
-          }
-      
-          const professionalAs = JSON.parse(JSON.stringify(result[0]));
-          const appointmentAs = appointments.map(appointment => JSON.parse(JSON.stringify(appointment)));
-      
-          const schedule = professionalAs.schedule;
-          const { hourStart, hourEnd } = schedule;
-          const breakHour = schedule.break;
-          const breakTime = schedule.timeBreak;
-      
-          const unavailableTimes: string[] = appointmentAs.map(appointment => appointment.schedule.hour);
-      
-          const availableTimes: string[] = [];
-          let currentTime = hourStart;
-      
-          while (currentTime <= hourEnd) {
-            if ( currentTime < breakHour ||currentTime >= breakHour + breakTime) {
-                if(!unavailableTimes.includes(`0${currentTime}:00`)){
-                    if(!unavailableTimes.includes(`${currentTime}:00`)){
-                        const timeString = currentTime < 10 ? `0${currentTime}:00` : `${currentTime}:00`;
-                        availableTimes.push(timeString);
+            const result = await sequelize.query(
+                `SELECT schedule FROM professionals WHERE id = ${id}`,
+                { type: QueryTypes.SELECT }
+            );
+
+            const appointments = await sequelize.query(
+                `SELECT schedule FROM appointments WHERE professional_id = ${id} AND schedule->>'date' = '${date}'`,
+                { type: QueryTypes.SELECT }
+            );
+
+            if (!result || result.length === 0) {
+                throw new Error("Profissional não encontrado");
+            }
+
+            const professionalAs = JSON.parse(JSON.stringify(result[0]));
+            const appointmentAs = appointments.map(appointment => JSON.parse(JSON.stringify(appointment)));
+
+            const schedule = professionalAs.schedule;
+            const { hourStart, hourEnd } = schedule;
+            const breakHour = schedule.break;
+            const breakTime = schedule.timeBreak;
+
+            const unavailableTimes: string[] = appointmentAs.map(appointment => appointment.schedule.hour);
+
+            const availableTimes: string[] = [];
+            let currentTime = hourStart;
+
+            while (currentTime <= hourEnd) {
+                if (currentTime < breakHour || currentTime >= breakHour + breakTime) {
+                    if (!unavailableTimes.includes(`0${currentTime}:00`)) {
+                        if (!unavailableTimes.includes(`${currentTime}:00`)) {
+                            const timeString = currentTime < 10 ? `0${currentTime}:00` : `${currentTime}:00`;
+                            availableTimes.push(timeString);
+                        }
                     }
                 }
+                currentTime++;
             }
-            currentTime++;
-          }
-      
-          return availableTimes;
+
+            return availableTimes;
         } catch (error) {
-          throw new Error("Erro ao obter os horários disponíveis do profissional");
+            throw new Error("Erro ao obter os horários disponíveis do profissional");
         }
     },
 }

@@ -43,64 +43,37 @@ export const professionalController = {
     },
 
     // POST /professional/login
+    // Função para realizar o login do Profissional
     login: async (req: Request, res: Response) => {
-        const { email, password } = req.body
+        const { email, password } = req.body;
 
         try {
-            const profissional = await professionalService.findbyEmail(email)
+            // Encontre o Profissional com base no email fornecido
+            const profissional = await professionalService.findbyEmail(email);
 
             if (!profissional) {
-                return res.status(401).json({ message: 'E-mail não registrado' })
+                return res.status(401).json({ message: 'E-mail não registrado' });
             }
 
-            profissional.checkPasswordProfessional(password, (err, match) => {
-                if (err) {
-                    return res.status(400).json({ message: err.message })
-                }
+            // Verifique se a senha fornecida está correta
+            const isPasswordCorrect = await profissional.checkPasswordProfessional(password);
 
-                if (!match) {
-                    return res.status(401).json({ message: 'Senha incorreta' })
-                }
+            if (!isPasswordCorrect) {
+                return res.status(401).json({ message: 'Senha incorreta', authenticated: false, profissional });
+            }
 
-                const payload = {
-                    id: profissional.id,
-                    first_name: profissional.first_name,
-                    email: profissional.email
-                }
+            // Gerar o token JWT para autenticação
+            const payload = {
+                id: profissional.id,
+                first_name: profissional.first_name,
+                email: profissional.email
+            };
 
-                const token = jwtProfessional.signPayload(payload, '1d')
+            const token = jwtProfessional.signPayload(payload, '1d');
 
-                return res.status(200).json({ authenticated: true, profissional, token })
-            })
-
-            return res.status(200).json({ authenticated: false, profissional })
+            return res.status(200).json({ authenticated: true, profissional, token });
         } catch (err) {
-            const profissional = await professionalService.findbyEmail(email)
-
-            const opa = profissional.checkPasswordProfessional(password, (err, isSame) => {
-                if (err) {
-                    return res.status(400).json({ message: err.message, authenticated: false, profissional })
-                }
-
-                if (!isSame) {
-                    return res.status(401).json({ message: 'Senha incorreta', authenticated: false, profissional })
-                }
-
-                const payload = {
-                    id: profissional.id,
-                    first_name: profissional.first_name,
-                    email: profissional.email
-                }
-
-                const token = jwtService.signPayload(payload, '1d')
-
-                return res.status(200).json({ authenticated: true, profissional, token })
-            })
-
-
-            if (err instanceof Error) {
-                return res.status(400).json({ message: err.message, authenticated: false, opa })
-            }
+            return res.status(400).json({ message: err.message, authenticated: false });
         }
     },
 
