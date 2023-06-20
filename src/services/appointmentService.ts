@@ -131,14 +131,10 @@ export const appointmentService = {
       professionals p ON p.id = a.professional_id
     WHERE
       a.professional_id = ${professional_id}
+    AND
+      a.status = 'Pendente'
     GROUP BY a.id, c.id, p.id
     ORDER BY
-      CASE
-        WHEN a.status = 'Pendente' THEN 1
-        WHEN a.status = 'Finalizado' THEN 2
-        WHEN a.status = 'Cancelado' THEN 3
-        ELSE 4
-      END,
       (a.schedule->>'date')::date ASC,
       (a.schedule->>'time')::time ASC;`,
       { type: QueryTypes.SELECT }
