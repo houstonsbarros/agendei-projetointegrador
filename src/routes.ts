@@ -26,7 +26,7 @@ router.get('/professional/availableSchedules', professionalController.availableT
 router.post('/service/create', ensureAuthProfessional, serviceController.create)
 router.get('/professional/getServices/', serviceController.getServicesByProfessional)
 router.put('/service/update', ensureAuthProfessional, serviceController.update)
-router.delete('/service/delete', ensureAuthProfessional, serviceController.delete)
+router.delete('/service/delete/:id', ensureAuthProfessional, serviceController.delete);
 
 // Routes for Appointments
 router.post('/appointment/create', appointmentController.create)
