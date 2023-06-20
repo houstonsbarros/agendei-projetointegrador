@@ -103,7 +103,7 @@ export const professionalService = {
             const timeInterval = 15; // Intervalo de tempo em minutos
 
             const availableTimes: string[] = [];
-            let currentTime = hourStart;
+            let currentTime = timeInterval;
 
             while (currentTime <= hourEnd && currentTime % timeInterval === 0) {
                 if (currentTime < breakHour || currentTime >= breakHour + breakTime) {
