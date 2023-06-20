@@ -128,5 +128,25 @@ export const appointmentService = {
     );
 
     return appointments;
-  }
+  },
+
+  reports: async (professional_id: number) => {
+    const reports = await sequelize.query(
+      `SELECT
+      COUNT(DISTINCT client_id) AS total_clientes,
+      COUNT(*) AS total_agendamentos,
+      COUNT(CASE WHEN (schedule->>'data')::date = CURRENT_DATE THEN 1 END) AS total_agendamentos_dia_atual,
+      COUNT(CASE WHEN status = 'Finalizado' THEN 1 END) AS total_agendamentos_finalizados,
+      COUNT(CASE WHEN status = 'Pendente' THEN 1 END) AS total_agendamentos_pendentes,
+      COUNT(CASE WHEN status = 'Cancelado' THEN 1 END) AS total_agendamentos_cancelados
+      FROM
+          appointments
+      WHERE
+          professional_id = ${professional_id}};
+      `,
+      { type: QueryTypes.SELECT }
+    );
+
+    return reports;
+  },
 };

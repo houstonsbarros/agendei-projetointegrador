@@ -2,6 +2,7 @@ import { Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/auth";
 import { Appointment } from "../models/Appointment";
 import { appointmentService } from "../services/appointmentService";
+import { AuthenticatedRequestProfessional } from "../middlewares/authProfessional";
 
 export const appointmentController = {
     create: async (req: AuthenticatedRequest, res: Response) => {
@@ -99,5 +100,13 @@ export const appointmentController = {
         const appointment = await appointmentService.clientAppointmentsByID(parsedId, parsedAppointmentId)
 
         return res.status(200).json(appointment)
+    },
+
+    reports: async (req: AuthenticatedRequestProfessional, res: Response) => {
+        const { id } = req.professional!
+
+        const appointments = await appointmentService.clientAppointments(Number(id))
+
+        return res.status(200).json(appointments)
     }
 }
