@@ -135,10 +135,13 @@ export const professionalController = {
 
     // GET /professional/appointmentSchedule
     appointmentSchedule: async (req: Request, res: Response) => {
-        const { id } = req.body
+        const { id, date } = req.query
+
+        const parsedId = Number(id);
+        const parsedDate = String(date);
 
         try {
-            const professional = await professionalService.appointmentSchedule(id)
+            const professional = await professionalService.appointmentSchedule(parsedId, parsedDate)
 
             return res.json(professional)
         } catch (err) {

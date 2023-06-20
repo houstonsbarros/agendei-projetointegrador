@@ -74,18 +74,53 @@ export const professionalService = {
         return professionals
     },
 
-    appointmentSchedule: async (id: number = 0) => {
-        if (id) {
-            const professional = await sequelize.query(`SELECT id, schedule->>'hourStart' as hourStart, schedule->>'hourEnd' as hourEnd FROM professionals WHERE id = ${id}`, { type: QueryTypes.SELECT })
-            return professional[0]
-        } else {
-            const professional = await sequelize.query(`SELECT schedule FROM professionals WHERE id = 4`, {
-                type: QueryTypes.SELECT
-            })
+    appointmentSchedule: async (id: number, date: string) => {
+        try {
+            const result = await sequelize.query(
+                `SELECT schedule FROM professionals WHERE id = ${id}`,
+                { type: QueryTypes.SELECT }
+            );
 
-            return professional
+            const appointments = await sequelize.query(
+                `SELECT schedule FROM appointments WHERE professional_id = ${id} AND schedule->>'date' = '${date}'`,
+                { type: QueryTypes.SELECT }
+            );
+
+            if (!result || result.length === 0) {
+                throw new Error("Profissional não encontrado");
+            }
+
+            const professionalAs = JSON.parse(JSON.stringify(result[0]));
+            const appointmentAs = appointments.map(appointment => JSON.parse(JSON.stringify(appointment)));
+
+            const schedule = professionalAs.schedule;
+            const { hourStart, hourEnd } = schedule;
+            const breakHour = schedule.break;
+            const breakTime = schedule.timeBreak;
+
+            const unavailableTimes: string[] = appointmentAs.map(appointment => appointment.schedule.hour);
+
+            const timeInterval = 15; // Intervalo de tempo em minutos
+
+            const availableTimes: string[] = [];
+            let currentTime = hourStart;
+
+            while (currentTime <= hourEnd && currentTime % timeInterval === 0) {
+                if (currentTime < breakHour || currentTime >= breakHour + breakTime) {
+                    if (!unavailableTimes.includes(`0${currentTime}:00`)) {
+                        if (!unavailableTimes.includes(`${currentTime}:00`)) {
+                            const timeString = `${currentTime.toString().padStart(2, '0')}:00`;
+                            availableTimes.push(timeString);
+                        }
+                    }
+                }
+                currentTime += timeInterval;
+            }
+
+            return availableTimes;
+        } catch (error) {
+            throw new Error("Erro ao obter os horários disponíveis do profissional");
         }
-
     },
 
     availableTimes: async (id: number, date: string) => {
