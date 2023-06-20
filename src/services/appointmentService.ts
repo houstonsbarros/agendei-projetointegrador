@@ -142,7 +142,7 @@ export const appointmentService = {
       FROM
           appointments
       WHERE
-          professional_id = ${professional_id}};
+          professional_id = ${professional_id};
       `,
       { type: QueryTypes.SELECT }
     );
