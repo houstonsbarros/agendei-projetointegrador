@@ -1,6 +1,6 @@
 import { QueryTypes } from "sequelize"
 import { sequelize } from "../database"
-import { Professional } from "../models/Professional"
+import Professional from "../models/Professional"
 import { ProfessionalCreationAttributes } from "../models/Professional"
 
 export const professionalService = {
