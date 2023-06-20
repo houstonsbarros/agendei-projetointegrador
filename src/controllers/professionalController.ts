@@ -141,7 +141,7 @@ export const professionalController = {
         const parsedDate = String(date);
 
         try {
-            const professional = await professionalService.appointmentSchedule(Number(parsedId), parsedDate)
+            const professional = await professionalService.appointmentSchedule(parsedDate)
 
             return res.json({professional, id, date})
         } catch (err) {
