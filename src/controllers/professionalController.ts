@@ -59,7 +59,7 @@ export const professionalController = {
             const isPasswordCorrect = await profissional.checkPasswordProfessional(password);
 
             if (!isPasswordCorrect) {
-                return res.status(401).json({ message: 'Senha incorreta', authenticated: false, profissional });
+                return res.status(401).json({ message: 'Senha incorreta', authenticated: false });
             }
 
             // Gerar o token JWT para autenticação
