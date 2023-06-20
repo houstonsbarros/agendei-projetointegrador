@@ -1,7 +1,7 @@
 import { sequelize } from '../database';
 import { DataTypes, Model, Optional } from 'sequelize';
 import { Client } from './Client';
-import { Professional } from './Professional';
+import Professional from './Professional';
 import { Service } from './Service';
 
 export interface Appointment {
