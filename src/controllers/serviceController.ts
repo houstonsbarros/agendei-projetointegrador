@@ -55,5 +55,14 @@ export const serviceController = {
                 return res.status(400).json({ message: err.message })
             }
         }
+    },
+
+    getById: async (req: AuthenticatedRequestProfessional, res: Response) => {
+        const professionalId = req.professional!.id;
+        const serviceId = parseInt(req.params.id);
+      
+        const service = await serviceService.getById(serviceId, professionalId);
+      
+        return res.status(200).json(service);
     }
 }

@@ -36,5 +36,16 @@ export const serviceService = {
         })
 
         return services
+    },
+
+    getById: async (id: number, professional_id: number) => {
+        const service = await Service.findOne({
+            where: {
+                id,
+                professional_id
+            }
+        })
+
+        return service
     }
 }
