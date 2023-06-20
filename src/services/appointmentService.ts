@@ -120,6 +120,7 @@ export const appointmentService = {
       STRING_AGG(s.name, ', ') AS service_names,
       CONCAT(c.first_name, ' ', c.last_name) AS client_name,
       CONCAT(p.first_name, ' ', p.last_name) AS professional_name,
+      p.adress AS professional_adress
     FROM
       appointments a
     JOIN
@@ -139,8 +140,7 @@ export const appointmentService = {
         ELSE 4
       END,
       (a.schedule->>'date')::date ASC,
-      (a.schedule->>'time')::time ASC;
-      `,
+      (a.schedule->>'time')::time ASC;`,
       { type: QueryTypes.SELECT }
     );
 
@@ -154,9 +154,9 @@ export const appointmentService = {
       CONCAT(c.first_name, ' ', c.last_name) AS client_name, 
       CONCAT(p.first_name, ' ', p.last_name) AS professional_name
       FROM appointments a
-      JOIN services s ON s.id = ANY(a.services)
-      JOIN clients c ON c.id = a.client_id
-      JOIN professionals p ON p.id = a.professional_id
+        JOIN services s ON s.id = ANY(a.services)
+        JOIN clients c ON c.id = a.client_id
+        JOIN professionals p ON p.id = a.professional_id
       WHERE a.client_id = ${client_id}
       AND a.id = ${id}
       GROUP BY a.id, c.id, p.id
