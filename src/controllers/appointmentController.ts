@@ -25,8 +25,7 @@ export const appointmentController = {
     },
 
     update: async (req: AuthenticatedRequest, res: Response) => {
-        const { id } = req.params
-        const { service_id, schedule, payment, status } = req.body
+        const { id, service_id, schedule, payment, status } = req.body
 
         const appointment = await appointmentService.update(Number(id), {
             service_id,
@@ -109,6 +108,7 @@ export const appointmentController = {
 
         return res.status(200).json(appointment)
     },
+
 
     reports: async (req: AuthenticatedRequestProfessional, res: Response) => {
         const { id } = req.professional!
