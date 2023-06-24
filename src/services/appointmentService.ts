@@ -43,6 +43,15 @@ export const appointmentService = {
     return updatedAppointments[0];
   },
 
+  appointmentConfirmation: async (id: number) => {
+    const [affectedRows, updatedAppointments] = await Appointment.update({
+      status: "Confirmado"
+    }, {
+      where: { id },
+      returning: true
+    });
+  },
+
   delete: async (id: number) => {
     const appointment = await Appointment.destroy({
       where: { id }
@@ -133,6 +142,8 @@ export const appointmentService = {
       a.professional_id = ${professional_id}
     AND
       a.status = 'Pendente'
+    AND
+      (a.schedule->>'date')::date >= CURRENT_DATE
     GROUP BY a.id, c.id, p.id
     ORDER BY
       (a.schedule->>'date')::date ASC,

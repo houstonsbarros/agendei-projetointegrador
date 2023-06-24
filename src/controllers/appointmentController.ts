@@ -116,5 +116,13 @@ export const appointmentController = {
         const appointments = await appointmentService.reports(Number(id))
 
         return res.status(200).json(appointments)
+    },
+
+    appointmentConfirmation: async (req: AuthenticatedRequestProfessional, res: Response) => {
+        const id = parseInt(req.params.id);
+
+        const appointment = await appointmentService.appointmentConfirmation(Number(id))
+
+        return res.status(200).json(appointment)
     }
 }

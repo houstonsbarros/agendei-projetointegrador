@@ -40,5 +40,6 @@ router.get('/client/agendamentos', ensureAuth, appointmentController.clientAppoi
 router.get('/professional/agendamentos', ensureAuthProfessional, appointmentController.professionalAppointments)
 router.get('/client/finalizado', ensureAuth, appointmentController.clientAppointmentByID)
 router.get('/professional/reports', ensureAuthProfessional, appointmentController.reports)
+router.put('/appointment/confirm/:id', ensureAuthProfessional, appointmentController.appointmentConfirmation)
 
 export { router }
