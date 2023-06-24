@@ -45,7 +45,7 @@ export const appointmentService = {
 
   appointmentConfirmation: async (id: number) => {
     const [affectedRows, updatedAppointments] = await Appointment.update({
-      status: "Confirmado"
+      status: "Finalizado"
     }, {
       where: { id },
       returning: true
