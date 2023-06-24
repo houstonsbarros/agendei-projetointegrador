@@ -122,6 +122,7 @@ export const appointmentService = {
   professionalAppointments: async (professional_id: number) => {
     const appointments = await sequelize.query(
       `SELECT
+      a.id,
       a.schedule,
       a.payment,
       a.status,
