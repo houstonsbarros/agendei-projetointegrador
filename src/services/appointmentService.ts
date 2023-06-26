@@ -84,36 +84,39 @@ export const appointmentService = {
   clientAppointments: async (client_id: number) => {
     const appointments = await sequelize.query(
       `SELECT
-      a.schedule,
-      a.payment,
-      a.status,
-      SUM(s.price) AS total_price,
-      STRING_AGG(s.name, ', ') AS service_names,
-      CONCAT(c.first_name, ' ', c.last_name) AS client_name,
-      CONCAT(p.first_name, ' ', p.last_name) AS professional_name,
-      p.adress AS professional_adress
-    FROM
-      appointments a
-    JOIN
-      services s ON s.id = ANY(a.services)
-    JOIN
-      clients c ON c.id = a.client_id
-    JOIN
-      professionals p ON p.id = a.professional_id
-    WHERE
-      a.client_id = ${client_id}
-    GROUP BY a.id, c.id, p.id
-    ORDER BY
-      CASE
-        WHEN a.status = 'Pendente' THEN 1
-        WHEN a.status = 'Finalizado' THEN 2
-        WHEN a.status = 'Cancelado' THEN 3
-        ELSE 4
-      END,
-      (a.schedule->>'date')::date ASC,
-      (a.schedule->>'time')::time ASC;
+        a.schedule,
+        a.payment,
+        a.status,
+        SUM(s.price) AS total_price,
+        STRING_AGG(s.name, ', ') AS service_names,
+        CONCAT(c.first_name, ' ', c.last_name) AS client_name,
+        CONCAT(p.first_name, ' ', p.last_name) AS professional_name,
+        p.adress AS professional_adress
+      FROM
+        appointments a
+      JOIN
+        services s ON s.id = ANY(a.services)
+      JOIN
+        clients c ON c.id = a.client_id
+      JOIN
+        professionals p ON p.id = a.professional_id
+      WHERE
+        a.client_id = :client_id
+      GROUP BY a.id, c.id, p.id
+      ORDER BY
+        CASE
+          WHEN a.status = 'Pendente' THEN 1
+          WHEN a.status = 'Finalizado' THEN 2
+          WHEN a.status = 'Cancelado' THEN 3
+          ELSE 4
+        END,
+        (a.schedule->>'date')::date ASC,
+        (a.schedule->>'time')::time ASC;
       `,
-      { type: QueryTypes.SELECT }
+      {
+        type: QueryTypes.SELECT,
+        replacements: { client_id },
+      }
     );
 
     return appointments;
@@ -122,34 +125,38 @@ export const appointmentService = {
   professionalAppointments: async (professional_id: number) => {
     const appointments = await sequelize.query(
       `SELECT
-      a.id,
-      a.schedule,
-      a.payment,
-      a.status,
-      SUM(s.price) AS total_price,
-      STRING_AGG(s.name, ', ') AS service_names,
-      CONCAT(c.first_name, ' ', c.last_name) AS client_name,
-      CONCAT(p.first_name, ' ', p.last_name) AS professional_name,
-      p.adress AS professional_adress
-    FROM
-      appointments a
-    JOIN
-      services s ON s.id = ANY(a.services)
-    JOIN
-      clients c ON c.id = a.client_id
-    JOIN
-      professionals p ON p.id = a.professional_id
-    WHERE
-      a.professional_id = ${professional_id}
-    AND
-      a.status = 'Pendente'
-    AND
-      (a.schedule->>'date')::date >= CURRENT_DATE
-    GROUP BY a.id, c.id, p.id
-    ORDER BY
-      (a.schedule->>'date')::date ASC,
-      (a.schedule->>'time')::time ASC;`,
-      { type: QueryTypes.SELECT }
+        a.id,
+        a.schedule,
+        a.payment,
+        a.status,
+        SUM(s.price) AS total_price,
+        STRING_AGG(s.name, ', ') AS service_names,
+        CONCAT(c.first_name, ' ', c.last_name) AS client_name,
+        CONCAT(p.first_name, ' ', p.last_name) AS professional_name,
+        p.adress AS professional_adress
+      FROM
+        appointments a
+      JOIN
+        services s ON s.id = ANY(a.services)
+      JOIN
+        clients c ON c.id = a.client_id
+      JOIN
+        professionals p ON p.id = a.professional_id
+      WHERE
+        a.professional_id = :professional_id
+      AND
+        a.status = 'Pendente'
+      AND
+        (a.schedule->>'date')::date >= CURRENT_DATE
+      GROUP BY a.id, c.id, p.id
+      ORDER BY
+        (a.schedule->>'date')::date ASC,
+        (a.schedule->>'time')::time ASC;
+      `,
+      {
+        type: QueryTypes.SELECT,
+        replacements: { professional_id },
+      }
     );
 
     return appointments;
@@ -158,18 +165,21 @@ export const appointmentService = {
   clientAppointmentsByID: async (client_id: number, id: number) => {
     const appointments = await sequelize.query(
       `SELECT a.schedule, a.payment, a.status, sum(s.price) AS total_price, 
-      string_agg(s.name, ', ') AS service_names, 
-      CONCAT(c.first_name, ' ', c.last_name) AS client_name, 
-      CONCAT(p.first_name, ' ', p.last_name) AS professional_name
+        string_agg(s.name, ', ') AS service_names, 
+        CONCAT(c.first_name, ' ', c.last_name) AS client_name, 
+        CONCAT(p.first_name, ' ', p.last_name) AS professional_name
       FROM appointments a
         JOIN services s ON s.id = ANY(a.services)
         JOIN clients c ON c.id = a.client_id
         JOIN professionals p ON p.id = a.professional_id
-      WHERE a.client_id = ${client_id}
-      AND a.id = ${id}
+      WHERE a.client_id = :client_id
+      AND a.id = :id
       GROUP BY a.id, c.id, p.id
       `,
-      { type: QueryTypes.SELECT }
+      {
+        type: QueryTypes.SELECT,
+        replacements: { client_id, id },
+      }
     );
 
     return appointments;
@@ -178,20 +188,23 @@ export const appointmentService = {
   reports: async (professional_id: number) => {
     const reports = await sequelize.query(
       `SELECT
-      COUNT(DISTINCT a.client_id) AS total_clientes,
-      COUNT(*) AS total_agendamentos,
-      COUNT(CASE WHEN (a.schedule->>'data')::date = CURRENT_DATE THEN 1 END) AS total_agendamentos_dia_atual,
-      COUNT(CASE WHEN a.status = 'Finalizado' THEN 1 END) AS total_agendamentos_finalizados,
-      COUNT(CASE WHEN a.status = 'Pendente' THEN 1 END) AS total_agendamentos_pendentes,
-      COUNT(CASE WHEN a.status = 'Cancelado' THEN 1 END) AS total_agendamentos_cancelados,
-      SUM(CASE WHEN a.status = 'Finalizado' THEN s.price ELSE 0 END) AS total_valor_servicos_finalizados
-  FROM
-      appointments a
-      JOIN services s ON s.id = ANY(a.services)
-  WHERE
-      a.professional_id = ${professional_id};
+        COUNT(DISTINCT a.client_id) AS total_clientes,
+        COUNT(*) AS total_agendamentos,
+        COUNT(CASE WHEN (a.schedule->>'data')::date = CURRENT_DATE THEN 1 END) AS total_agendamentos_dia_atual,
+        COUNT(CASE WHEN a.status = 'Finalizado' THEN 1 END) AS total_agendamentos_finalizados,
+        COUNT(CASE WHEN a.status = 'Pendente' THEN 1 END) AS total_agendamentos_pendentes,
+        COUNT(CASE WHEN a.status = 'Cancelado' THEN 1 END) AS total_agendamentos_cancelados,
+        SUM(CASE WHEN a.status = 'Finalizado' THEN s.price ELSE 0 END) AS total_valor_servicos_finalizados
+      FROM
+        appointments a
+        JOIN services s ON s.id = ANY(a.services)
+      WHERE
+        a.professional_id = :professional_id;
       `,
-      { type: QueryTypes.SELECT }
+      {
+        type: QueryTypes.SELECT,
+        replacements: { professional_id },
+      }
     );
 
     return reports;

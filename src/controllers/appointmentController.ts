@@ -7,48 +7,48 @@ import { AuthenticatedRequestProfessional } from "../middlewares/authProfessiona
 export const appointmentController = {
     create: async (req: AuthenticatedRequest, res: Response) => {
         try {
-            const { client_id, professional_id, services, schedule, payment, status } = req.body
+            const { client_id, professional_id, services, schedule, payment, status } = req.body;
 
             const appointment = await appointmentService.create({
-                client_id,
-                professional_id,
+                client_id: Number(client_id),
+                professional_id: Number(professional_id),
                 services,
                 schedule,
                 payment,
                 status
-            })
+            });
 
-            return res.status(201).json(appointment)
+            return res.status(201).json(appointment);
         } catch (error) {
-            return res.status(400).json({ error: error.message })
+            return res.status(400).json({ error: error.message });
         }
     },
 
     update: async (req: AuthenticatedRequest, res: Response) => {
-        const { id, service_id, schedule, payment, status } = req.body
+        const { id, service_id, schedule, payment, status } = req.body;
 
         const appointment = await appointmentService.update(Number(id), {
             service_id,
             schedule,
             payment,
             status
-        })
+        });
 
-        return res.status(200).json(appointment)
+        return res.status(200).json(appointment);
     },
 
     delete: async (req: AuthenticatedRequest, res: Response) => {
-        const { id } = req.params
+        const { id } = req.params;
 
-        const appointment = await appointmentService.delete(Number(id))
+        const appointment = await appointmentService.delete(Number(id));
 
-        return res.status(200).json(appointment)
+        return res.status(200).json(appointment);
     },
 
     findbyClientId: async (req: AuthenticatedRequest, res: Response) => {
-        const clientId = req.client!.id;
+        const clientId = Number(req.client!.id);
 
-        if (typeof clientId !== 'number') {
+        if (isNaN(clientId)) {
             return res.status(400).json({ error: 'Invalid client ID' });
         }
 
@@ -58,22 +58,24 @@ export const appointmentController = {
     },
 
     findbyProfessionalId: async (req: AuthenticatedRequest, res: Response) => {
-        const { id } = req.professional!
+        const { id } = req.professional!;
 
-        const appointments = await appointmentService.findbyClientId(Number(id))
+        const appointments = await appointmentService.findbyClientId(Number(id));
 
-        return res.status(200).json(appointments)
+        return res.status(200).json(appointments);
     },
 
     verifySchedule: async (req: AuthenticatedRequest, res: Response) => {
         const { id } = req.body;
 
-        if (typeof id !== 'number') {
+        const parsedId = Number(id);
+
+        if (isNaN(parsedId)) {
             return res.status(400).json({ error: 'Invalid ID' });
         }
 
         try {
-            const appointments = await appointmentService.verifySchedule(Number(id));
+            const appointments = await appointmentService.verifySchedule(parsedId);
 
             return res.status(200).json(appointments);
         } catch (error) {
@@ -82,47 +84,47 @@ export const appointmentController = {
     },
 
     clientAppointments: async (req: AuthenticatedRequest, res: Response) => {
-        const { id } = req.client!
+        const { id } = req.client!;
 
-        const appointments = await appointmentService.clientAppointments(Number(id))
+        const appointments = await appointmentService.clientAppointments(Number(id));
 
-        return res.status(200).json(appointments)
+        return res.status(200).json(appointments);
     },
 
     professionalAppointments: async (req: AuthenticatedRequestProfessional, res: Response) => {
-        const { id } = req.professional!
+        const { id } = req.professional!;
 
-        const appointments = await appointmentService.professionalAppointments(Number(id))
+        const appointments = await appointmentService.professionalAppointments(Number(id));
 
-        return res.status(200).json(appointments)
+        return res.status(200).json(appointments);
     },
 
     clientAppointmentByID: async (req: AuthenticatedRequest, res: Response) => {
-        const { id } = req.client!
-        const { appointmentId } = req.query
-        
-        const parsedId = Number(id)
-        const parsedAppointmentId = Number(appointmentId)
+        const { id } = req.client!;
+        const { appointmentId } = req.query;
 
-        const appointment = await appointmentService.clientAppointmentsByID(parsedId, parsedAppointmentId)
+        const parsedId = Number(id);
+        const parsedAppointmentId = Number(appointmentId);
 
-        return res.status(200).json(appointment)
+        const appointment = await appointmentService.clientAppointmentsByID(parsedId, parsedAppointmentId);
+
+        return res.status(200).json(appointment);
     },
 
 
     reports: async (req: AuthenticatedRequestProfessional, res: Response) => {
-        const { id } = req.professional!
+        const { id } = req.professional!;
 
-        const appointments = await appointmentService.reports(Number(id))
+        const appointments = await appointmentService.reports(Number(id));
 
-        return res.status(200).json(appointments)
+        return res.status(200).json(appointments);
     },
 
     appointmentConfirmation: async (req: AuthenticatedRequestProfessional, res: Response) => {
         const id = parseInt(req.params.id);
 
-        const appointment = await appointmentService.appointmentConfirmation(Number(id))
+        const appointment = await appointmentService.appointmentConfirmation(Number(id));
 
-        return res.status(200).json(appointment)
+        return res.status(200).json(appointment);
     }
 }

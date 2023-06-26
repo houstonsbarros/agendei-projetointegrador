@@ -1,26 +1,28 @@
-import { QueryTypes } from "sequelize"
-import { sequelize } from "../database"
-import Professional from "../models/Professional"
-import { ProfessionalCreationAttributes } from "../models/Professional"
+import { Op, QueryTypes } from "sequelize";
+import { sequelize } from "../database";
+import Professional from "../models/Professional";
+import { ProfessionalCreationAttributes } from "../models/Professional";
 
 export const professionalService = {
     findbyEmail: async (email: string) => {
         try {
-            const profissional = await Professional.findOne({
+            const professional = await Professional.findOne({
                 where: {
-                    email
+                    email: {
+                        [Op.eq]: email
+                    }
                 }
             });
-            return profissional;
+            return professional;
         } catch (err) {
             throw new Error('Erro ao buscar o Profissional por email');
         }
     },
 
     create: async (attributes: ProfessionalCreationAttributes) => {
-        const professional = await Professional.create(attributes)
+        const professional = await Professional.create(attributes);
 
-        return professional
+        return professional;
     },
 
     update: async (id: number, attributes: {
@@ -30,26 +32,30 @@ export const professionalService = {
         phone?: string,
         email?: string
     }) => {
-        const [affectedRows, updatedProfessionals] = await Professional.update(attributes,
-            {
-                where:
-                {
-                    id
-                },
-                returning: true
-            })
+        const [affectedRows, updatedProfessionals] = await Professional.update(attributes, {
+            where: {
+                id: {
+                    [Op.eq]: id
+                }
+            },
+            returning: true
+        });
 
-        return updatedProfessionals[0]
+        return updatedProfessionals[0];
     },
 
     updatePassword: async (id: number, password: string) => {
         const [affectedRows, updatedProfessionals] = await Professional.update({ password }, {
-            where: { id },
+            where: {
+                id: {
+                    [Op.eq]: id
+                }
+            },
             returning: true,
             individualHooks: true
-        })
+        });
 
-        return updatedProfessionals[0]
+        return updatedProfessionals[0];
     },
 
     updateSchedule: async (id: number, schedule: {
@@ -60,29 +66,39 @@ export const professionalService = {
         hourEnd: number,
     }) => {
         const [affectedRows, updatedProfessionals] = await Professional.update({ schedule }, {
-            where: { id },
+            where: {
+                id: {
+                    [Op.eq]: id
+                }
+            },
             returning: true,
             individualHooks: true
-        })
+        });
 
-        return updatedProfessionals[0]
+        return updatedProfessionals[0];
     },
 
     getProfessionals: async () => {
-        const professionals = await Professional.findAll()
+        const professionals = await Professional.findAll();
 
-        return professionals
+        return professionals;
     },
 
-    appointmentSchedule: async (date: string) => {
+    appointmentSchedule: async (id, date: string) => {
         try {
             const result = await sequelize.query(
-                `SELECT schedule FROM professionals WHERE id = 1`,
-                { type: QueryTypes.SELECT }
+                `SELECT schedule FROM professionals WHERE id = ?`,
+                {
+                    replacements: [id],
+                    type: QueryTypes.SELECT
+                }
             );
             const appointments = await sequelize.query(
-                `SELECT schedule FROM appointments WHERE professional_id = 1 AND schedule->>'date' = '${date}'`,
-                { type: QueryTypes.SELECT }
+                `SELECT schedule FROM appointments WHERE professional_id = ? AND schedule->>'date' = ?`,
+                {
+                    replacements: [id, date],
+                    type: QueryTypes.SELECT
+                }
             );
 
             if (!result || result.length === 0) {
@@ -126,13 +142,19 @@ export const professionalService = {
     availableTimes: async (id: number, date: string) => {
         try {
             const result = await sequelize.query(
-                `SELECT schedule FROM professionals WHERE id = ${id}`,
-                { type: QueryTypes.SELECT }
+                `SELECT schedule FROM professionals WHERE id = ?`,
+                {
+                    replacements: [id],
+                    type: QueryTypes.SELECT
+                }
             );
 
             const appointments = await sequelize.query(
-                `SELECT schedule FROM appointments WHERE professional_id = ${id} AND schedule->>'date' = '${date}'`,
-                { type: QueryTypes.SELECT }
+                `SELECT schedule FROM appointments WHERE professional_id = ? AND schedule->>'date' = ?`,
+                {
+                    replacements: [id, date],
+                    type: QueryTypes.SELECT
+                }
             );
 
             if (!result || result.length === 0) {
