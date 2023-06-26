@@ -84,7 +84,7 @@ export const professionalService = {
         return professionals;
     },
 
-    appointmentSchedule: async (id, date: string) => {
+    appointmentSchedule: async (id: number, date: string) => {
         try {
             const result = await sequelize.query(
                 `SELECT schedule FROM professionals WHERE id = ?`,
