@@ -10,8 +10,8 @@ export const appointmentController = {
             const { client_id, professional_id, services, schedule, payment, status } = req.body;
 
             const appointment = await appointmentService.create({
-                client_id: Number(client_id),
-                professional_id: Number(professional_id),
+                client_id,
+                professional_id,
                 services,
                 schedule,
                 payment,
