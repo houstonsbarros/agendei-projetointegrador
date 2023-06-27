@@ -3,6 +3,7 @@ import { AuthenticatedRequest } from "../middlewares/auth";
 import { Appointment } from "../models/Appointment";
 import { appointmentService } from "../services/appointmentService";
 import { AuthenticatedRequestProfessional } from "../middlewares/authProfessional";
+const nodemailer = require('nodemailer');
 
 export const appointmentController = {
     create: async (req: AuthenticatedRequest, res: Response) => {
@@ -22,6 +23,37 @@ export const appointmentController = {
         } catch (error) {
             return res.status(400).json({ error: error.message });
         }
+    },
+
+    sendMail: async (req: AuthenticatedRequest, res: Response) => {
+        const { destinatario, assunto, mensagem } = req.body;
+
+        var transport = nodemailer.createTransport({
+            host: "sandbox.smtp.mailtrap.io",
+            port: 2525,
+            auth: {
+              user: "f379f7a4a5bc30",
+              pass: "461c4195d3d737"
+            }
+        });
+
+        const mailOptions = {
+            from: 'seu-email@gmail.com',
+            to: destinatario,
+            subject: assunto,
+            text: mensagem,
+            html: '<h1>Olá</h1><p>Seu agendamento foi confirmado</p>'
+        };
+
+        transport.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log(error);
+              res.status(500).send('Erro ao enviar o e-mail');
+            } else {
+              console.log('E-mail enviado: ' + info.response);
+              res.send('E-mail enviado com sucesso');
+            }
+          });
     },
 
     update: async (req: AuthenticatedRequest, res: Response) => {

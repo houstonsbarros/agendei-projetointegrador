@@ -42,4 +42,7 @@ router.get('/client/finalizado', ensureAuth, appointmentController.clientAppoint
 router.get('/professional/reports', ensureAuthProfessional, appointmentController.reports)
 router.put('/appointment/confirm/:id', ensureAuthProfessional, appointmentController.appointmentConfirmation)
 
+// Routes for Email
+router.post('/email/send', appointmentController.sendMail)
+
 export { router }
