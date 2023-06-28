@@ -31,7 +31,7 @@ export const appointmentController = {
         var transport = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
-            secure: true,
+            secure: false,
             auth: {
                 user: process.env.USER_EMAIL,
                 pass: process.env.USER_PASSWORD
@@ -535,7 +535,6 @@ export const appointmentController = {
                 console.log(error);
                 res.status(500).send('Erro ao enviar o e-mail');
             } else {
-                console.log('E-mail enviado: ' + info.response);
                 res.send('E-mail enviado com sucesso');
             }
         });
