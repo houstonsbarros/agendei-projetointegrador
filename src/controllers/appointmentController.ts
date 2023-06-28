@@ -38,7 +38,7 @@ export const appointmentController = {
         });
 
         const mailOptions = {
-            from: 'noreply@agendei.tech',
+            from: 'Agendei <noreply@agendei.tech>',
             to: destinatario,
             subject: assunto,
             html: `
